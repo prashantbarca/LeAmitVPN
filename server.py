@@ -30,6 +30,11 @@ def swap_src_and_dst(pkt, layer):
 #  Now process packets
 #
 while 1:
+  binary_packet = tun.read(tun.mtu)   # get packet routed to our "network"
+  
+  raw_packet = IP(binary_packet)        # Scapy parses byte string into its packet object
+  
+  print raw_packet.show()
   '''
   if packet.haslayer(ICMP) and packet[ICMP].type == 8 : # ICMP echo-request
     pong = packet.copy()
@@ -77,8 +82,3 @@ while 1:
     print "Unhandled packet: " + packet.summary()
   '''
 
-  binary_packet = tun.read(tun.mtu)   # get packet routed to our "network"
-  
-  raw_packet = IP(binary_packet)        # Scapy parses byte string into its packet object
-  
-  print raw_packet.show()
