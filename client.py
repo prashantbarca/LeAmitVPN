@@ -15,6 +15,6 @@ tun.mtu = 1500
 tun.up()
 
 while 1:
-    packet = Ether()/IP(dst="8.8.8.8")/ICMP()
+    packet = IP(src="10.10.0.2",dst="8.8.8.8")/ICMP()
     packet.show()
-    os.write(tun,packet.build())
+    tun.write(packet.build())
