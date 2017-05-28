@@ -7,7 +7,7 @@ import os
 SERVER_IP = "129.170.212.225"
 
 # Open tun0 device
-tun = TunTapDevice()
+tun = TunTapDevice("leamit0",pytun.IFF_TUN | pytun.IFF_NO_PI)
 tun.addr = "10.10.0.2"
 tun.dstaddr = SERVER_IP
 tun.netmask = "255.255.255.0"
