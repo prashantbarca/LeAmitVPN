@@ -8,15 +8,14 @@
 
 from scapy.all import *
 from pytun import TunTapDevice
-
+import pytun
 import os
-import codecs   # gimme rot13
 
 BASE_IP = "10.10.0.2"
 SERVER_IP = "10.10.0.1"
 
 # Open tun0 device
-tun = TunTapDevice("leamit0",pytun.IFF_TUN | pytun.IFF_NO_PI)
+tun = TunTapDevice("leamit0",pytun.IFF_TUN| pytun.IFF_NO_PI)
 tun.addr = SERVER_IP
 tun.netmask = "255.255.255.0"
 tun.mtu = 1500

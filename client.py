@@ -3,6 +3,7 @@
 from pytun import TunTapDevice
 from scapy.all import *
 import os
+import pytun
 
 SERVER_IP = "129.170.212.225"
 
