@@ -78,7 +78,7 @@ while 1:
     print "Unhandled packet: " + packet.summary()
   '''
 
-  binary_packet = tun.read(tun.mtu)   # get packet routed to our "network"
+  binary_packet = os.read(tun,tun.mtu)   # get packet routed to our "network"
   
   raw_packet = IP(binary_packet)        # Scapy parses byte string into its packet object
   

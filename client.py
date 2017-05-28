@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 from pytun import TunTapDevice
-from scapy import *
+from scapy.all import *
+import os
 
-SERVER_IP = "10.10.0.1"
+SERVER_IP = "129.170.212.225"
 
 # Open tun0 device
 tun = TunTapDevice()
@@ -14,5 +15,6 @@ tun.mtu = 1500
 tun.up()
 
 while 1:
-    packet = IP(dst="10.10.0.3")/TCP(dport=1000)/"hello world"
-    tun.write(hexdump(packet))
+    packet = Ether()/IP(dst="8.8.8.8")/ICMP()
+    packet.show()
+    os.write(tun,packet.build())
