@@ -12,17 +12,15 @@ import pytun
 import os
 import time
 
-BASE_IP = "10.10.0.2"
 SERVER_IP = "10.10.0.1"
 
 # Open tun0 device
 tun = TunTapDevice("leamit0",pytun.IFF_TUN| pytun.IFF_NO_PI)
-tun.addr = SERVER_IP
-tun.dstaddr = "10.10.0.2"
-tun.netmask = "255.255.255.0"
-tun.mtu = 1500
+#tun.addr = SERVER_IP
+#tun.netmask = "255.255.255.0"
+#tun.mtu = 1500
 #tun.persist(True)
-tun.up()
+#tun.up()
 
 # About-face for a packet: swap src and dst in specified layer
 def swap_src_and_dst(pkt, layer):
