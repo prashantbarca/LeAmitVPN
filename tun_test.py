@@ -1,3 +1,5 @@
+# Adapted from https://github.com/montag451/pytun/blob/master/test/test_tun.py
+
 import sys
 import optparse
 import socket
@@ -8,7 +10,7 @@ import pytun
 class TunnelServer(object):
 
     def __init__(self, taddr, tdstaddr, tmask, tmtu, laddr, lport, raddr, rport):
-        self._tun = pytun.TunTapDevice(flags=pytun.IFF_TUN|pytun.IFF_NO_PI)
+        self._tun = pytun.TunTapDevice("leamit0",flags=pytun.IFF_TUN|pytun.IFF_NO_PI)
         self._tun.addr = taddr
         self._tun.dstaddr = tdstaddr
         self._tun.netmask = tmask
@@ -22,7 +24,7 @@ class TunnelServer(object):
     def run(self):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
-        to_tun = ''
+        data = ''
         to_sock = ''
         while True:
             try:
@@ -30,17 +32,18 @@ class TunnelServer(object):
                 if self._tun in r:
                     to_sock = self._tun.read(mtu)
                 if self._sock in r:
-                    to_tun, addr = self._sock.recvfrom(65535)
+                    data, addr = self._sock.recvfrom(65535)
                     if addr[0] != self._raddr or addr[1] != self._rport:
-                        to_tun = '' # drop packet
+                        data = '' # drop packet
                 if self._tun in w:
-                    self._tun.write(to_tun)
-                    to_tun = ''
+                    self._tun.write(data)
+                    data = ''
                 if self._sock in w:
+                    #to_sock = "test"+to_sock+"test"
                     self._sock.sendto(to_sock, (self._raddr, self._rport))
                     to_sock = ''
                 r = []; w = []
-                if to_tun:
+                if data:
                     w.append(self._tun)
                 else:
                     r.append(self._sock)
@@ -62,23 +65,23 @@ def main():
             help='set tunnel destination address')
     parser.add_option('--tun-netmask', default='255.255.255.0',dest='tmask',
             help='set tunnel netmask')
-    parser.add_option('--tun-mtu', type='int', default=1500,dest='tmtu',
-            help='set tunnel MTU')
+
+    tun_mtu = 1500
+    remote_addr = "128.199.177.106"
+    remote_port = 5050
+    
     parser.add_option('--local-addr', default='0.0.0.0', dest='laddr',
             help='set local address [%default]')
     parser.add_option('--local-port', type='int', default=12000, dest='lport',
             help='set local port [%default]')
-    parser.add_option('--remote-addr', dest='raddr',
-            help='set remote address')
-    parser.add_option('--remote-port', type='int', dest='rport',
-            help='set remote port')
+
     opt, args = parser.parse_args()
-    if not (opt.taddr and opt.tdstaddr and opt.raddr and opt.rport):
+    if not (opt.taddr and opt.tdstaddr):
         parser.print_help()
         return 1
     try:
-        server = TunnelServer(opt.taddr, opt.tdstaddr, opt.tmask, opt.tmtu,
-                opt.laddr, opt.lport, opt.raddr, opt.rport)
+        server = TunnelServer(opt.taddr, opt.tdstaddr, opt.tmask, tun_mtu,
+                              opt.laddr, opt.lport, remote_addr, remote_port)
     except (pytun.Error, socket.error), e:
         print >> sys.stderr, str(e)
         return 1
