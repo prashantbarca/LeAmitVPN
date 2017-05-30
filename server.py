@@ -17,7 +17,7 @@ import socket
 import select
 import errno
 import pytun
-import scapy
+from scapy.all import IP,UDP
 
 def swap_src_and_dst(pkt, layer):
     pkt[layer].dst, pkt[layer].src = pkt[layer].src, pkt[layer].dst 
