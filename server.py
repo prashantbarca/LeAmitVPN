@@ -1,39 +1,89 @@
-#!/usr/bin/env python
-
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim:fenc=utf-8
 #
-#  Fake ICMP and ARP responses from non-existings IPs via tap0.
-#  Create fake MAC addresses on the fly.
-#  Present a 'rot13' TCP echo service on any IP and port.  
+# Copyright © 2017 prashant <prashant@prashant>
 #
+# Distributed under terms of the MIT license.
 
-from scapy.all import *
-from pytun import TunTapDevice
+
+# Adapted:
+# https://github.com/montag451/pytun/blob/master/test/test_tun.py and
+# https://github.com/sergeybratus/netfluke/blob/master/tcp.py
+
+import sys
+import optparse
+import socket
+import select
+import errno
 import pytun
-import os
-import time
 
-SERVER_IP = "10.10.0.1"
-
-# Open tun0 device
-tun = TunTapDevice("leamit0",pytun.IFF_TUN| pytun.IFF_NO_PI)
-#tun.addr = SERVER_IP
-#tun.netmask = "255.255.255.0"
-#tun.mtu = 1500
-#tun.persist(True)
-#tun.up()
-
-# About-face for a packet: swap src and dst in specified layer
 def swap_src_and_dst(pkt, layer):
-  pkt[layer].dst, pkt[layer].src = pkt[layer].src, pkt[layer].dst 
+    pkt[layer].dst, pkt[layer].src = pkt[layer].src, pkt[layer].dst 
 
-#
-#  Now process packets
-#
-while 1:
-  binary_packet = tun.read(tun.mtu)   # get packet routed to our "network"
-  
-  raw_packet = IP(binary_packet)        # Scapy parses byte string into its packet object
-  
-  print raw_packet.show()
+class TunnelServer(object):
 
-  time.sleep(2)
+    def __init__(self, taddr, tdstaddr, tmask, tmtu, laddr, lport):
+        
+        self._tun = pytun.TunTapDevice("leamit0",flags=pytun.IFF_TUN|pytun.IFF_NO_PI)
+        self._tun.addr = taddr
+        self._tun.dstaddr = tdstaddr
+        self._tun.netmask = tmask
+        self._tun.mtu = tmtu
+        self._tun.up()
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock.bind((laddr, lport))
+
+    def run(self):
+        mtu = self._tun.mtu
+        r = [self._tun, self._sock]; w = []; x = []
+        data = ''
+        to_sock = ''
+        while True:
+            try:
+                r, w, x = select.select(r, w, x)
+                if self._tun in r:
+                    to_sock = self._tun.read(mtu)
+                if self._sock in r:
+                    data, addr = self._sock.recvfrom(65535)
+                    if addr[0] != self._raddr or addr[1] != self._rport:
+                        data = '' # drop packet
+                if self._tun in w:
+                    self._tun.write(data)
+                    data = ''
+                if self._sock in w:
+                    #to_sock = "test"+to_sock+"test"
+                    self._sock.sendto(to_sock, (self._raddr, self._rport))
+                    to_sock = ''
+                r = []; w = []
+                if data:
+                    w.append(self._tun)
+                else:
+                    r.append(self._sock)
+                if to_sock:
+                    w.append(self._sock)
+                else:
+                    r.append(self._tun)
+            except (select.error, socket.error, pytun.Error), e:
+                if e[0] == errno.EINTR:
+                    continue
+                print >> sys.stderr, str(e)
+                break
+
+def main():
+    tun_mtu = 1500
+
+    ptp_addr = "10.10.0.1"
+    ptp_dst = "10.10.0.0"
+    ptp_mask = "255.255.255.0"
+    sock_addr = "128.199.177.106"
+    sock_port = 5050
+    
+    try:
+        server = TunnelServer(ptp_addr, ptp_dst, ptp_mask, tun_mtu,
+                              sock_addr, sock_port)
+    server.run()
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
