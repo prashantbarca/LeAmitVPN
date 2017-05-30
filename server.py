@@ -48,6 +48,10 @@ class TunnelServer(object):
                     data, addr = self._sock.recvfrom(65535)
                     if addr[0] != self._raddr or addr[1] != self._rport:
                         data = '' # drop packet
+                    packet = IP(data)
+                    udp_packet = UDP(packet)
+                    udp_packet.summary()
+                    #payload = packet.sprintf(%UDP.)
                 if self._tun in w:
                     self._tun.write(data)
                     data = ''
@@ -55,7 +59,9 @@ class TunnelServer(object):
                     #to_sock = "test"+to_sock+"test"
                     self._sock.sendto(to_sock, (self._raddr, self._rport))
                     to_sock = ''
+
                 r = []; w = []
+
                 if data:
                     w.append(self._tun)
                 else:
