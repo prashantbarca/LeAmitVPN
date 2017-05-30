@@ -1,6 +1,7 @@
 
 from scapy.all import *
 
+import time
 import socket
 import os
 import pytap
@@ -13,6 +14,7 @@ SERVER_UDP_IP = "128.199.177.106"
 
 users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()}
 addresses = {"10.10.0.2": None, "10.10.0.3": None}
+messages = {"10.10.0.2": [], "10.10.0.3": []}
 
 # Server authenticates user
 def validate_user(username, pw):
@@ -23,7 +25,7 @@ def validate_user(username, pw):
 
 # Client sends authentication message
 def send_auth_packet(sock, username, pw):
-    sock.sendto("username:"+username+":"+md5.new(pw).digest(), (SERVER_UDP_IP, 5050))
+    sock.sendto("username:"+username+":"+md5.new(pw).digest()+":"+time.time(), (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
@@ -31,10 +33,11 @@ def recv_auth(sock, addr, message):
     try:
         username = message.split(':')[1]
         pw = message.split(':')[2]
-        if validate_user(username, pw):
+        if validate_user(username, pw) and message not in messages[username]:
             sock.sendto("Authenticated", addr)
             addresses[username] = addr
             current_states[username] = 1
+            messages[username].append(message)
             return True
         else:
             return False
