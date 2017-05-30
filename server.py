@@ -17,7 +17,7 @@ import socket
 import select
 import errno
 import pytun
-from scapy.all import *
+from scapy.all import * as scapy
 
 def swap_src_and_dst(pkt, layer):
     pkt[layer].dst, pkt[layer].src = pkt[layer].src, pkt[layer].dst 
@@ -46,8 +46,8 @@ class TunnelServer(object):
                 to_sock = self._tun.read(mtu)
             if self._sock in r:
                 data, addr = self._sock.recvfrom(65535)
-                packet = IP(data)
-                udp_packet = UDP(packet)
+                packet = scapy.IP(data)
+                udp_packet = scapy.UDP(packet)
                 udp_packet.summary()
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
