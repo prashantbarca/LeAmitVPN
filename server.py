@@ -46,8 +46,8 @@ class TunnelServer(object):
                 to_sock = self._tun.read(mtu)
             if self._sock in r:
                 data, addr = self._sock.recvfrom(65535)
-                packet = scapy.IP(data)
-                udp_packet = scapy.UDP(packet)
+                packet = IP(data)
+                udp_packet = UDP(packet)
                 udp_packet.summary()
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
