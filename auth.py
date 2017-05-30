@@ -1,6 +1,6 @@
 
 from scapy.all import *
-from amitcrypto import *
+#from amitcrypto import *
 
 import time
 import socket
