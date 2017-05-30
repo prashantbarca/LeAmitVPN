@@ -46,8 +46,6 @@ class TunnelServer(object):
                     to_sock = self._tun.read(mtu)
                 if self._sock in r:
                     data, addr = self._sock.recvfrom(65535)
-                    if addr[0] != self._raddr or addr[1] != self._rport:
-                        data = '' # drop packet
                     packet = IP(data)
                     udp_packet = UDP(packet)
                     udp_packet.summary()
@@ -84,9 +82,8 @@ def main():
     ptp_mask = "255.255.255.0"
     sock_addr = "128.199.177.106"
     sock_port = 5050
-    
-    try:
-        server = TunnelServer(ptp_addr, ptp_dst, ptp_mask, tun_mtu,
+
+    server = TunnelServer(ptp_addr, ptp_dst, ptp_mask, tun_mtu,
                               sock_addr, sock_port)
     server.run()
     return 0
