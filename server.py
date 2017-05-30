@@ -88,7 +88,7 @@ def main():
     try:
         server = TunnelServer(ptp_addr, ptp_dst, ptp_mask, tun_mtu,
                               sock_addr, sock_port)
-    server.run()
+        server.run()
     return 0
 
 if __name__ == '__main__':
