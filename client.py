@@ -6,7 +6,7 @@ import socket
 import select
 import errno
 import pytun
-import auth
+import utils
 
 class TunnelClient(object):
 
@@ -17,8 +17,10 @@ class TunnelClient(object):
         self._tun.netmask = tmask
         self._tun.mtu = tmtu
         self._tun.up()
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        print "socket created"
         self._sock.bind((laddr, lport))
+        print "socket connected"
         self._raddr = raddr
         self._rport = rport
         self._isAuthenticated = False
@@ -29,7 +31,7 @@ class TunnelClient(object):
         data = ''
         to_sock = ''
 
-        auth.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+        utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
         
         while True:
             try:
