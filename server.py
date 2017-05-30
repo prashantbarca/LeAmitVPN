@@ -50,7 +50,8 @@ class TunnelServer(object):
                 self._raddr = addr[0]
                 self._rport = addr[1]
                 packet = IP(data)
-                print packet.sprintf("Raw: %Raw.load% \n") 
+                raw_data = packet.sprintf("%Raw.load%")
+                print str(raw_data)
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
                 #self._tun.write(data)
