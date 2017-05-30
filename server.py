@@ -19,6 +19,8 @@ import errno
 import pytun
 import regex
 from scapy.all import IP,UDP,Raw
+import utils
+#from utils import *
 
 def swap_src_and_dst(pkt, layer):
     pkt[layer].dst, pkt[layer].src = pkt[layer].src, pkt[layer].dst 
@@ -49,13 +51,8 @@ class TunnelServer(object):
                 data, addr =  self._sock.recvfrom(65535)
                 self._raddr = addr[0]
                 self._rport = addr[1]
-                raw_data = Raw(data)
-                if raw_data != None:
-                    raw_data = raw_data.show()
-                    raw_str = raw_data.snprintf("{Raw.load}")
-
-                    if raw_str!= None and raw_str.find("username") != -1:
-                        recv_auth(self._sock, addr, raw_data)
+                print "Recv auth entered"
+                utils.recv_auth(self._sock, addr, data)
                 
             if self._tun in w:
                 #self._tun.write(data)
