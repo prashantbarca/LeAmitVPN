@@ -49,7 +49,7 @@ class TunnelServer(object):
                 data, addr = self._sock.recvfrom(65535)
                 self._raddr = addr[0]
                 self._rport = addr[1]
-                raw_data = Raw(data)
+                raw_data = Raw(data).show()
                 if raw_data.find("username") != -1:
                     recv_auth(self._sock, addr, raw_data)
                 
