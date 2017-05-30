@@ -18,7 +18,7 @@ import select
 import errno
 import pytun
 import regex
-from scapy.all import IP,UDP
+from scapy.all import IP,UDP,Raw
 
 def swap_src_and_dst(pkt, layer):
     pkt[layer].dst, pkt[layer].src = pkt[layer].src, pkt[layer].dst 
@@ -50,8 +50,8 @@ class TunnelServer(object):
                 self._raddr = addr[0]
                 self._rport = addr[1]
                 packet = IP(data)
-                raw_data = packet.sprintf("%Raw.load%")
-                print str(raw_data)
+                raw_data = Raw(packet)
+                print raw_data.show()
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
                 #self._tun.write(data)
