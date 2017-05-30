@@ -49,28 +49,30 @@ class TunnelServer(object):
                 self._raddr = addr[0]
                 self._rport = addr[1]
                 packet = IP(data)
-                #udp_packet = UDP(packet)
-                #udp_packet.summary()
-                packet.show()
+                if packet.haslayer(UDP):
+                    udp_packet = UDP(packet)
+                    udp_packet.show()
+                
+                #packet.show()
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
-                self._tun.write(data)
+                #self._tun.write(data)
                 data = ''
             if self._sock in w:
                 #to_sock = "test"+to_sock+"test"
-                self._sock.sendto(to_sock, (self._raddr, self._rport))
+                #self._sock.sendto(to_sock, (self._raddr, self._rport))
                 to_sock = ''
 
-            r = []; w = []
+            #r = []; w = []
 
-            if data:
-                w.append(self._tun)
-            else:
-                r.append(self._sock)
-            if to_sock:
-                w.append(self._sock)
-            else:
-                r.append(self._tun)
+           # if data:
+           #     w.append(self._tun)
+           # else:
+           #     r.append(self._sock)
+           # if to_sock:
+           #     w.append(self._sock)
+           # else:
+           #     r.append(self._tun)
                     
 def main():
     tun_mtu = 1500
