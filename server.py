@@ -50,7 +50,8 @@ class TunnelServer(object):
                 self._raddr = addr[0]
                 self._rport = addr[1]
                 raw_data = Raw(data).show()
-                if raw_data.find("username") != -1:
+                raw_str = raw_data.snprintf("{Raw.load}")
+                if raw_str.find("username") != -1:
                     recv_auth(self._sock, addr, raw_data)
                 
             if self._tun in w:
