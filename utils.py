@@ -1,6 +1,6 @@
 
 from scapy.all import *
-#from amitcrypto import *
+from amitcrypto import *
 
 import time
 import socket
@@ -11,19 +11,32 @@ import md5
 
 STATES = ["Closed", "Authenticated"]              # Label of states for client
 current_states = {"10.10.0.2": 0, "10.10.0.3": 0} # State machine for client
-SERVER_UDP_PORT = 5050            # Random port
-SERVER_UDP_IP = "128.199.177.106" # prashant.at
+SERVER_TCP_PORT = 5050            # Random port
+SERVER_TCP_IP = "128.199.177.106" # prashant.at
 
 users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()} # Keeps track of usernames and passwords. I know MD5 is bad!
 addresses = {"10.10.0.2": None, "10.10.0.3": None} # Keeps track of current communicating person
-auth_messages = {"10.10.0.2": [], "10.10.0.3": []} # Important to prevent replay attacks
-seq_messages = {"10.10.0.2": [], "10.10.0.3": []}  # This will keep a list of tuples - seq, ack_seq pairs. 
+messages = {"10.10.0.2": [], "10.10.0.3": []}
 
-# We think it will be easy to route packets... But... Its to be seen
+# get client message queue object
+def get_message_queue(addr):
+    for k,v in messages.iteritems():
+        if k == addr:
+            return k
+    return None
 
-# Check who the message must be routed to
-def route_message(message):
-    return
+# received a message for the client
+def message_for_client(addr,message):
+    idx = get_message_queue(addr)
+    if idx != None:
+        messages[idx].append(message)
+
+def get_messages_for_client(addr):
+    idx = get_message_queue(addr)
+    if idx != None:
+        return messages[idx]
+    else:
+        return None
 
 # Server authenticates user
 def validate_user(username, pw):
@@ -53,20 +66,9 @@ def recv_auth(sock, addr, message):
     except:
         return False
 
-# Server receives a disconnect
-def recv_disconnect(sock, addr, username, pw):
-    if validate_user(user, pw):
-        sock.sendto("Disconnected", addr)
-        addresses[username] = None
-        current_states[username] = 0
-
-
 # Check if addr exists in dictionary
 def check_if_addr_exists(addr):
     for k,v in addresses.iteritems():
         if v == addr:
             return k
-        else:
-            return None
-
-
+    return None
