@@ -41,40 +41,34 @@ class TunnelServer(object):
         data = ''
         to_sock = ''
         while True:
-            try:
-                r, w, x = select.select(r, w, x)
-                if self._tun in r:
-                    to_sock = self._tun.read(mtu)
-                if self._sock in r:
-                    data, addr = self._sock.recvfrom(65535)
-                    packet = IP(data)
-                    udp_packet = UDP(packet)
-                    udp_packet.summary()
-                    #payload = packet.sprintf(%UDP.)
-                if self._tun in w:
-                    self._tun.write(data)
-                    data = ''
-                if self._sock in w:
-                    #to_sock = "test"+to_sock+"test"
-                    self._sock.sendto(to_sock, (self._raddr, self._rport))
-                    to_sock = ''
+            r, w, x = select.select(r, w, x)
+            if self._tun in r:
+                to_sock = self._tun.read(mtu)
+            if self._sock in r:
+                data, addr = self._sock.recvfrom(65535)
+                packet = IP(data)
+                udp_packet = UDP(packet)
+                udp_packet.summary()
+                #payload = packet.sprintf(%UDP.)
+            if self._tun in w:
+                self._tun.write(data)
+                data = ''
+            if self._sock in w:
+                #to_sock = "test"+to_sock+"test"
+                self._sock.sendto(to_sock, (self._raddr, self._rport))
+                to_sock = ''
 
-                r = []; w = []
+            r = []; w = []
 
-                if data:
-                    w.append(self._tun)
-                else:
-                    r.append(self._sock)
-                if to_sock:
-                    w.append(self._sock)
-                else:
-                    r.append(self._tun)
-            except (select.error, socket.error, pytun.Error), e:
-                if e[0] == errno.EINTR:
-                    continue
-                print >> sys.stderr, str(e)
-                break
-
+            if data:
+                w.append(self._tun)
+            else:
+                r.append(self._sock)
+            if to_sock:
+                w.append(self._sock)
+            else:
+                r.append(self._tun)
+                    
 def main():
     tun_mtu = 1500
 
