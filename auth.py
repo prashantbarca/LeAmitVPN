@@ -1,5 +1,6 @@
 
 from scapy.all import *
+from amitcrypto import *
 
 import time
 import socket
@@ -7,14 +8,18 @@ import os
 import pytap
 import md5
 
-STATES = ["Closed", "Authenticated"]
-current_states = {"10.10.0.2": 0, "10.10.0.3": 0}
-SERVER_UDP_PORT = 5050
-SERVER_UDP_IP = "128.199.177.106"
 
-users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()}
-addresses = {"10.10.0.2": None, "10.10.0.3": None}
-messages = {"10.10.0.2": [], "10.10.0.3": []}
+STATES = ["Closed", "Authenticated"]              # Label of states for client
+current_states = {"10.10.0.2": 0, "10.10.0.3": 0} # State machine for client
+SERVER_UDP_PORT = 5050            # Random port
+SERVER_UDP_IP = "128.199.177.106" # prashant.at
+
+users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()} # Keeps track of usernames and passwords. I know MD5 is bad!
+addresses = {"10.10.0.2": None, "10.10.0.3": None} # Keeps track of current communicating person
+auth_messages = {"10.10.0.2": [], "10.10.0.3": []} # Important to prevent replay attacks
+seq_messages = {"10.10.0.2": [], "10.10.0.3": []}  # This will keep a list of tuples - seq, ack_seq pairs. 
+
+# We think it will be easy to route packets... But... Its to be seen
 
 # Check who the message must be routed to
 def route_message(message):
@@ -37,7 +42,7 @@ def recv_auth(sock, addr, message):
     try:
         username = message.split(':')[1]
         pw = message.split(':')[2]
-        if validate_user(username, pw) and message not in messages[username]:
+        if validate_user(username, pw) and message not in auth_messages[username]:
             sock.sendto("Authenticated", addr)
             addresses[username] = addr
             current_states[username] = 1
