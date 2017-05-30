@@ -28,16 +28,18 @@ def send_auth_packet(sock, username, pw):
 
 # Server receives message and decides if its an auth message
 def recv_auth(sock, addr, message):
-    username = message.split(':')[1]
-    pw = message.split(':')[2]
-    if validate_user(username, pw):
-        sock.sendto("Authenticated", addr)
-        addresses[username] = addr
-        current_states[username] = 1
-        return True
-    else:
+    try:
+        username = message.split(':')[1]
+        pw = message.split(':')[2]
+        if validate_user(username, pw):
+            sock.sendto("Authenticated", addr)
+            addresses[username] = addr
+            current_states[username] = 1
+            return True
+        else:
+            return False
+    except:
         return False
-    return
 
 # Server receives a disconnect
 def recv_disconnect(sock, addr, username, pw):
