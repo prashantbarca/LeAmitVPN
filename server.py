@@ -47,8 +47,9 @@ class TunnelServer(object):
             if self._sock in r:
                 data, addr = self._sock.recvfrom(65535)
                 packet = IP(data)
-                udp_packet = UDP(packet)
-                udp_packet.summary()
+                #udp_packet = UDP(packet)
+                #udp_packet.summary()
+                packet.summary()
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
                 self._tun.write(data)
