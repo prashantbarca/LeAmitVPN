@@ -16,6 +16,10 @@ users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").diges
 addresses = {"10.10.0.2": None, "10.10.0.3": None}
 messages = {"10.10.0.2": [], "10.10.0.3": []}
 
+# Check who the message must be routed to
+def route_message(message):
+    return
+
 # Server authenticates user
 def validate_user(username, pw):
     if users[username] == pw:
@@ -25,7 +29,7 @@ def validate_user(username, pw):
 
 # Client sends authentication message
 def send_auth_packet(sock, username, pw):
-    sock.sendto("username:"+username+":"+md5.new(pw).digest()+":"+time.time(), (SERVER_UDP_IP, 5050))
+    sock.sendto("username:"+username+":"+md5.new(pw).digest()+":"+ str(time.time()), (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
