@@ -11,8 +11,8 @@ import md5
 
 STATES = ["Closed", "Authenticated"]              # Label of states for client
 current_states = {"10.10.0.2": 0, "10.10.0.3": 0} # State machine for client
-SERVER_TCP_PORT = 5050            # Random port
-SERVER_TCP_IP = "128.199.177.106" # prashant.at
+SERVER_UDP_PORT = 5050            # Random port
+SERVER_UDP_IP = "128.199.177.106" # prashant.at
 
 users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()} # Keeps track of usernames and passwords. I know MD5 is bad!
 addresses = {"10.10.0.2": None, "10.10.0.3": None} # Keeps track of current communicating person
