@@ -35,6 +35,7 @@ class TunnelServer(object):
         self._tun.up()
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.bind((laddr, lport))
+        self._sock.listen(5)
 
     def run(self):
         mtu = self._tun.mtu
@@ -46,7 +47,8 @@ class TunnelServer(object):
             if self._tun in r:
                 to_sock = self._tun.read(mtu)
             if self._sock in r:
-                data, addr = self._sock.recvfrom(65535)
+                conn, addr = self._sock.accept()
+                data =  self._sock.recv(65535)
                 self._raddr = addr[0]
                 self._rport = addr[1]
                 raw_data = Raw(data)
