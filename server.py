@@ -84,11 +84,10 @@ def main():
     ptp_mask = "255.255.255.0"
     sock_addr = "128.199.177.106"
     sock_port = 5050
-    
-    try:
-        server = TunnelServer(ptp_addr, ptp_dst, ptp_mask, tun_mtu,
+
+    server = TunnelServer(ptp_addr, ptp_dst, ptp_mask, tun_mtu,
                               sock_addr, sock_port)
-        server.run()
+    server.run()
     return 0
 
 if __name__ == '__main__':
