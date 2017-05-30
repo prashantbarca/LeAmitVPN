@@ -33,7 +33,7 @@ class TunnelServer(object):
         self._tun.netmask = tmask
         self._tun.mtu = tmtu
         self._tun.up()
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.bind((laddr, lport))
 
     def run(self):
