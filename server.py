@@ -49,10 +49,8 @@ class TunnelServer(object):
                 data, addr = self._sock.recvfrom(65535)
                 self._raddr = addr[0]
                 self._rport = addr[1]
-                packet = IP(data)
-                raw_data = Raw(packet)
+                raw_data = Raw(data)
                 print raw_data.show()
-                #payload = packet.sprintf(%UDP.)
             if self._tun in w:
                 #self._tun.write(data)
                 data = ''
