@@ -46,10 +46,12 @@ class TunnelServer(object):
                 to_sock = self._tun.read(mtu)
             if self._sock in r:
                 data, addr = self._sock.recvfrom(65535)
+                self._raddr = addr[0]
+                self._rport = addr[1]
                 packet = IP(data)
                 #udp_packet = UDP(packet)
                 #udp_packet.summary()
-                packet.summary()
+                packet.show()
                 #payload = packet.sprintf(%UDP.)
             if self._tun in w:
                 self._tun.write(data)
