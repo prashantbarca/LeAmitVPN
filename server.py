@@ -18,7 +18,6 @@ import select
 import errno
 import pytun
 import utils
-import regex
 from scapy.all import IP,UDP,Raw
 
 def swap_src_and_dst(pkt, layer):
@@ -60,7 +59,19 @@ class TunnelServer(object):
                     send_info = (addr,send_packets)
                 else:
                     utils.receive_non_auth_message(data)
-
+                    exists = utils.check_if_addr_exists(addr)
+                    if exists != None:
+                        # first get client address
+                        clientIP = IP(data)
+                        if clientIP:
+                            cliaddr = clientIP.src
+                            # add to queue for client
+                            message_for_client(cliaddr,data)
+                    else:
+                        # iptables forward
+                        raddr = addr[0]
+                        rport = addr[1]
+                        self._sock.sendto(data,(raddr,rport))
 
             if self._tun in w:
                 # Encryption ?
@@ -70,10 +81,10 @@ class TunnelServer(object):
             if self._sock in w:
                 raddr = send_info[0][0]
                 rport = send_info[0][1]
-                #dirty_packets = send_info[1]
+                dirty_packets = send_info[1]
                 
-                #for dirty_packet in dirty_packets:
-                    #self._sock.sendto(dirty_packet,(raddr,rport))
+                for dirty_packet in dirty_packets:
+                    self._sock.sendto(dirty_packet,(raddr,rport))
                     
                 send_info = ''
 

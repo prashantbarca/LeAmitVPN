@@ -49,8 +49,6 @@ class TunnelClient(object):
                     data, addr = self._sock.recvfrom(65535)
                     if addr[0] != self._raddr or addr[1] != self._rport:
                         data = '' # drop packet
-                    # check if this is an authentication packet
-                    
                 if self._tun in w:
                     self._tun.write(data)
                     data = ''
