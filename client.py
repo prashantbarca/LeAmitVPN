@@ -58,15 +58,20 @@ class TunnelClient(object):
                 r, w, x = select.select(r, w, x)
                 
                 if self._tun in r:
+                    print 'reading from tunnel'
                     to_sock = self._tun.read(mtu)
                 if self._sock in r:
                     data, addr = self._sock.recvfrom(65535)
+                    print data
+                    print 'received'
                     if addr[0] != self._raddr or addr[1] != self._rport:
                         data = '' # drop packet
                 if self._tun in w:
+                    print 'writing to tunnel'
                     self._tun.write(data)
                     data = ''
                 if self._sock in w:
+                    print 'writing to socket'
                     #to_sock = "test"+to_sock+"test"
                     self._sock.sendto(to_sock, (self._raddr, self._rport))
                     to_sock = ''
