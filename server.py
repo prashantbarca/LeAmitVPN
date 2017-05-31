@@ -70,10 +70,10 @@ class TunnelServer(object):
             if self._sock in w:
                 raddr = send_info[0][0]
                 rport = send_info[0][1]
-                dirty_packets = send_info[1]
+                #dirty_packets = send_info[1]
                 
-                for dirty_packet in dirty_packets:
-                    self._sock.sendto(dirty_packet,(raddr,rport))
+                #for dirty_packet in dirty_packets:
+                    #self._sock.sendto(dirty_packet,(raddr,rport))
                     
                 send_info = ''
 
