@@ -71,7 +71,7 @@ def recv_auth(sock, addr, encmessage):
     aesobj = amitcrypto.AESCipher(key)
     #message = aesobj.decrypt(encmessage)
     message = encmessage
-    print "Recv auth method entered"
+    #print "Recv auth method entered"
     try:
         username = message.split(':')[1]
         pw = message.split(':')[2]
@@ -80,7 +80,7 @@ def recv_auth(sock, addr, encmessage):
         #print users[username], len(users[username])
         #print users[username] == pw
         if validate_user(username, pw):
-            print "Authenticated"
+            print "Valid poll received from " + username
             addresses[username] = addr
             return True
         else:

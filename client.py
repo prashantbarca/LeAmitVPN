@@ -11,6 +11,7 @@ import utils
 import time
 from threading import Thread
 import signal
+import md5
 
 def signal_handler(signal, frame):
     print('You pressed Ctrl+C!')
@@ -29,14 +30,16 @@ class TunnelClient(object):
         self._sock.bind((laddr, lport))
         self._raddr = raddr
         self._rport = rport
-        self._rpw = rpw
+        self._rpw = md5.new(rpw).digest()
+        if self._rpw != utils.users[self._tun.addr]:
+            print "Password doesn't match"
+            sys.exit(0)
         self._interval = 5 # 5 seconds is the timer interval
         self._time = 0
 
     def every_five_seconds(self):
         while True:
-            #print "Looping"
-            utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
+            utils.send_auth_packet(self._sock, self._tun.addr, self._rpw)
             time.sleep(5)
     
     def run(self):
