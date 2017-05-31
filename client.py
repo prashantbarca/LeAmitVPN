@@ -33,7 +33,7 @@ class TunnelClient(object):
 
     def every_five_seconds(self):
         while True:
-            print "Looping"
+            #print "Looping"
             utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
             time.sleep(5)
     
@@ -49,11 +49,11 @@ class TunnelClient(object):
         while True:
             try:
                 # check if we need to fire a poll
-                cur_time = time.time()
-                if cur_time - self._time > 5:
-                    print 'sending auth'
-                    utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
-                    self._time = time.time()
+                #cur_time = time.time()
+                #if cur_time - self._time > 5:
+                    #print 'sending auth'
+                    #utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
+                    #self._time = time.time()
 
                 r, w, x = select.select(r, w, x)
                 
