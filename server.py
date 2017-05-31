@@ -41,62 +41,63 @@ class TunnelServer(object):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
         send_info = ''
-        recv_info = ''
         send_addr = ''
+        recv_packet = ''
+        send_packet = ''
         
         while True:
             r, w, x = select.select(r, w, x)
 
             if self._tun in r:
-                send_data = self._tun.read(mtu)
-                send_info = [send_addr,send_data]
-                print 'read'+ str(send_data)+ 'from tunnel'
+                send_packet = self._tun.read(mtu)
+                send_info = [send_addr,recv_packets]
+                print 'read'+ str(send_packet)+ 'from tunnel'
                 
             if self._sock in r:
-                recv_data, addr =  self._sock.recvfrom(65535)
+                recv_packet, addr =  self._sock.recvfrom(65535)
 
-                auth = utils.recv_auth(self._sock, addr, recv_data)
+                auth = utils.recv_auth(self._sock, addr, recv_packet)
                 exists = utils.check_if_addr_exists(addr)
                 
                 if exists != None:
                     # first get client address
-                    clientIP = IP(recv_data)
+                    clientIP = IP(recv_packet)
                     # authorization packet
                     if auth == True:
                         if clientIP:
                             # get message queue and send one by one
                             recv_packets = utils.get_messages_for_client(clientIP.src)
+                            send_addr = utils.get_public_ip(clientIP.src)
+                            recv_packet = ''
                             if recv_packets != None:
-                                send_addr = get_public_ip(clientIP.src)
-                                recv_info = list(recv_packets_
                                 print ' '+str(recv_packets)+' now in queue'
                     else:
-                        utils.receive_non_auth_message(recv_data)
+                        utils.receive_non_auth_message(recv_packet)
                         if clientIP:
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
-                            utils.message_for_client(clientIP.dst,recv_data)
+                            utils.message_for_client(clientIP.dst,recv_packet)
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
+                            send_addr = utils.get_public_ip(clientIP.dst)
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
-                                send_addr = utils.get_public_ip(clientIP.dst)
-                                recv_info = list(recv_packets)
                                 print ' '+str(recv_packets)+' now in queue'
                 else:
                     # iptables forward
-                    print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_data)+ 'if it could'
+                    print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_packet)+ 'if it could'
                     raddr = addr[0]
                     rport = addr[1]
                     #aesobj = amitcrypto.AESCipher(key)
                     #self._sock.sendto(aesobj.encrypt(data),(raddr,rport))
-                    self._sock.sendto(recv_data,(raddr,rport))
+                    self._sock.sendto(recv_packet,(raddr,rport))
 
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
-                if recv_info:
-                    self._tun.write(recv_info)
-                    recv_info = ''
+                if recv_packet:
+                    print 'writing to tunnel' + str(recv_packet)
+                    self._tun.write(recv_packet)
+                    recv_packet = ''
 
             if self._sock in w:
                 if send_info:
@@ -111,16 +112,17 @@ class TunnelServer(object):
 
                     utils.clear_messages(send_info[0])
                     send_info = ''
+                    recv_packets = ''
 
             r = []; w = []
 
-            if recv_info:
+            if recv_packet:
                 print 'tun appended to w'
                 w.append(self._tun)
             else:
                 r.append(self._sock)
             
-            if send_info:
+            if send_packet:
                 w.append(self._sock)
             else:
                 r.append(self._tun)
