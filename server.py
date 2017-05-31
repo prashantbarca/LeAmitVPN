@@ -40,18 +40,20 @@ class TunnelServer(object):
     def run(self):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
-        data = ''
-        to_sock = ''
+        recv_packet = ''
+        send_info = ''
+        
         while True:
             r, w, x = select.select(r, w, x)
+
             if self._tun in r:
-                to_sock = self._tun.read(mtu)
+                recv_packet = self._tun.read(mtu)
+
             if self._sock in r:
-                conn, addr = self._sock.accept()
                 data =  self._sock.recv(65535)
-                self._raddr = addr[0]
-                self._rport = addr[1]
+
                 raw_data = Raw(data)
+
                 if raw_data != None:
                     raw_data = raw_data.show()
                     raw_str = raw_data.snprintf("{Raw.load}")
@@ -60,16 +62,25 @@ class TunnelServer(object):
                         auth = recv_auth(self._sock, addr, raw_data)
                         if auth == True:
                             # get message queue and send one by one
-                            dirty_packets = utils.get_message_queue(addr)
-                            for dirty_packet in dirty_packets:
-                                packet = IP(dirty_packet)
-                                self._sock.sendto(packet,())
+                            send_packets = utils.get_message_queue(addr)
+                            send_info = (addr,send_packets)
+                        else:
+                            send_info = ''
+
             if self._tun in w:
-                self._tun.write(data)
-                data = ''
+                # Encryption ?
+                self._tun.write(send_info)
+                send_info = ''
+
             if self._sock in w:
-                self._sock.sendto(to_sock, (self._raddr, self._rport))
-                to_sock = ''
+                raddr = send_info[0][0]
+                rport = send_info[0][1]
+                dirty_packets = send_info[1]
+                
+                for dirty_packet in dirty_packets:
+                    self._sock.sendto(dirty_packet,(raddr,rport))
+                    
+                send_info = ''
 
             r = []; w = []
 
@@ -81,7 +92,7 @@ class TunnelServer(object):
                 w.append(self._sock)
             else:
                 r.append(self._tun)
-                    
+
 def main():
     tun_mtu = 1500
 
