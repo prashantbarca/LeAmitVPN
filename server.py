@@ -54,10 +54,11 @@ class TunnelServer(object):
                 
                 auth = utils.recv_auth(self._sock, addr, data)
                 if auth == True:
-                	# get message queue and send one by one
+                    # get message queue and send one by one
                     send_packets = utils.get_message_queue(addr)
-                    send_info = (addr,send_packets)
-                    print ' '+str(send_packets)+' now in queue'
+                    if send_packets != None:
+                        send_info = (addr,send_packets)
+                        print ' '+str(send_packets)+' now in queue'
                 else:
                     print 'non auth message'
                     utils.receive_non_auth_message(data)
@@ -92,6 +93,7 @@ class TunnelServer(object):
                 print 'writing to socket. This is meant for'+str(raddr)
                 
                 dirty_packets = send_info[1]
+
                 
                 for dirty_packet in dirty_packets:
                     self._sock.sendto(dirty_packet,(raddr,rport))
