@@ -67,7 +67,7 @@ class TunnelServer(object):
                         if clientIP:
                             # get message queue and send one by one
                             recv_packets = utils.get_messages_for_client(clientIP.src)
-                            send_addr = utils.get_public_addr(clientIP.src)
+                            send_addr = utils.get_public_ip(clientIP.src)
                             recv_packet = ''
                             if recv_packets != None:
                                 print ' '+str(recv_packets)+' now in queue'
@@ -78,7 +78,7 @@ class TunnelServer(object):
                             # add to queue for client
                             utils.message_for_client(clientIP.dst,recv_packet)
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
-                            send_addr = utils.get_public_addr(clientIP.dst)
+                            send_addr = utils.get_public_ip(clientIP.dst)
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
                                 print ' '+str(recv_packets)+' now in queue'
