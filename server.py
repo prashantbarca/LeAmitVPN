@@ -53,12 +53,11 @@ class TunnelServer(object):
 
                 exists = utils.check_if_addr_exists(addr)
                 if exists != None:
+                    # first get client address
+                    clientIP = IP(data)
                     auth = utils.recv_auth(self._sock, addr, data)
+                    # authorization packet
                     if auth == True:
-
-                        # first get client address
-                        clientIP = IP(data)
-
                         if clientIP:
                             # get message queue and send one by one
                             send_packets = utils.get_messages_for_client(clientIP.src)
@@ -68,10 +67,6 @@ class TunnelServer(object):
                                 print ' '+str(send_packets)+' now in queue'
                     else:
                         utils.receive_non_auth_message(self._sock, addr, data)
-
-                        # first get client address
-                        clientIP = IP(data)
-
                         if clientIP:
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
@@ -81,10 +76,9 @@ class TunnelServer(object):
                                 send_addr = get_public_ip(clientIP.dst)
                                 send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
-                                
                 else:
                     # iptables forward
-                    print 'iptables will forward if it could'
+                    print ' addr '+ str(addr)+' does not exist .. iptables will forward if it could'
                     raddr = addr[0]
                     rport = addr[1]
                     self._sock.sendto(data,(raddr,rport))
