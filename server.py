@@ -101,12 +101,12 @@ class TunnelServer(object):
                 
                 dirty_packets = send_info[1]
 
-                
                 for dirty_packet in dirty_packets:
                     #aesobj = amitcrypto.AESCipher(key)
                     #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
                     self._sock.sendto(dirty_packet, (raddr,rport))
-                    
+
+                
                 send_info = ''
 
             r = []; w = []

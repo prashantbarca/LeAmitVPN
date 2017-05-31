@@ -43,6 +43,11 @@ def get_messages_for_client(addr):
     else:
         return None
 
+def clear_messages(public_ip):
+    lan_addr = check_if_addr_exists(public_ip)
+    if lan_addr != None:
+        messages[lan_addr] = []
+    
 # Server authenticates user
 def validate_user(username, pw):
     if users[username] == pw:
