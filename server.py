@@ -127,7 +127,7 @@ def main():
     tun_mtu = 1500
 
     ptp_addr = "10.10.0.1"
-    ptp_dst = "10.10.0.0"
+    ptp_dst = "10.10.0.1"
     ptp_mask = "255.255.255.0"
     sock_addr = "128.199.177.106"
     sock_port = 5050
