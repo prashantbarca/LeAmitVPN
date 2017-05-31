@@ -56,15 +56,15 @@ def send_auth_packet(sock, username, pw):
     message = "username:"+username+":"+pw+":" + str(time.time())
     aesobj = amitcrypto.AESCipher(key)
     
-    sock.sendto(aesobj.encrypt(message), (SERVER_UDP_IP, 5050))
-    #sock.sendto(message, (SERVER_UDP_IP, 5050))
+    #sock.sendto(aesobj.encrypt(message), (SERVER_UDP_IP, 5050))
+    sock.sendto(message, (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
 def recv_auth(sock, addr, encmessage):
     aesobj = amitcrypto.AESCipher(key)
-    message = aesobj.decrypt(encmessage)
-    #message = encmessage
+    #message = aesobj.decrypt(encmessage)
+    message = encmessage
     print "Recv auth method entered"
     try:
         username = message.split(':')[1]

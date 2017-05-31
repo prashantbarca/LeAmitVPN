@@ -66,6 +66,7 @@ class TunnelClient(object):
                 if self._sock in r:
                     data, addr = self._sock.recvfrom(65535)
                     aesobj = amitcrypto.AESCipher(key)
+                    #data = aesobj.decrypt(data)
                     data = aesobj.decrypt(data)
                     print 'received ' + data
                     if addr[0] != self._raddr or addr[1] != self._rport:
