@@ -20,6 +20,7 @@ class TunnelClient(object):
         self._tun.up()
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.bind((laddr, lport))
+        utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
         self._raddr = raddr
         self._rport = rport
         self._interval = 5 # 5 seconds is the timer interval
@@ -36,10 +37,10 @@ class TunnelClient(object):
                 r, w, x = select.select(r, w, x)
                 # check if we need to fire a poll
                 cur_time = time.time()
-
+                print cur_time, self._time
                 if cur_time - self._time > 5:
                     print 'sending auth'
-                    utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+                    utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
                     self._time = time.time()
                 
                 if self._tun in r:

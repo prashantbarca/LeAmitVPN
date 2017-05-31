@@ -50,7 +50,7 @@ def validate_user(username, pw):
 
 # Client sends authentication message
 def send_auth_packet(sock, username, pw):
-    message = "username:"+username+":"+md5.new(pw).digest()+":" + str(time.time())
+    message = "username:"+username+":"+pw+":" + str(time.time())
     aesobj = amitcrypto.AESCipher(key)
     
     #sock.sendto(aesobj.encrypt(message), (SERVER_UDP_IP, 5050))
