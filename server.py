@@ -78,7 +78,7 @@ class TunnelServer(object):
                                 print ' '+str(send_packets)+' now in queue'
                 else:
                     # iptables forward
-                    print ' addr '+ str(addr)+' does not exist .. iptables will forward if it could'
+                    print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(data)+ 'if it could'
                     raddr = addr[0]
                     rport = addr[1]
                     self._sock.sendto(data,(raddr,rport))
