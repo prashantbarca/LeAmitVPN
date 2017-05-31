@@ -115,6 +115,7 @@ class TunnelServer(object):
             r = []; w = []
 
             if recv_info:
+                print 'tun appended to w'
                 w.append(self._tun)
             else:
                 r.append(self._sock)
