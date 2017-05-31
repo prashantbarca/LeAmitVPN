@@ -82,7 +82,8 @@ class TunnelServer(object):
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(data)+ 'if it could'
                     raddr = addr[0]
                     rport = addr[1]
-                    self._sock.sendto(data,(raddr,rport))
+                    aesobj = amitcrypto.AESCipher(key)
+                    self._sock.sendto(aesobj.encrypt(data),(raddr,rport))
 
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
@@ -101,7 +102,8 @@ class TunnelServer(object):
 
                 
                 for dirty_packet in dirty_packets:
-                    self._sock.sendto(dirty_packet,(raddr,rport))
+                    aesobj = amitcrypto.AESCipher(key)
+                    self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
                     
                 send_info = ''
 
