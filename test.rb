@@ -1,3 +1,3 @@
 require 'socket'
 
-s = TCPSocket.new '10.10.0.3', 3000
+s = TCPSocket.new '10.10.0.2', 3000
