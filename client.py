@@ -12,6 +12,7 @@ import time
 from threading import Thread
 import signal
 import md5
+from Crypto.Cipher import XOR
 
 def signal_handler(signal, frame):
     print('You pressed Ctrl+C!')
