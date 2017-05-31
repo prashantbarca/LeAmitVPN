@@ -54,11 +54,16 @@ class TunnelServer(object):
                 
                 auth = utils.recv_auth(self._sock, addr, data)
                 if auth == True:
-                    # get message queue and send one by one
-                    send_packets = utils.get_message_queue(addr)
-                    if send_packets != None:
-                        send_info = (addr,send_packets)
-                        print ' '+str(send_packets)+' now in queue'
+                    exists = utils.check_if_addr_exists(addr)
+                    if exists != None:
+                        # first get client address
+                        clientIP = IP(data)
+                        if clientIP:
+                            # get message queue and send one by one
+                            send_packets = utils.get_messages_for_client(clientIP.src)
+                            if send_packets != None:
+                                send_info = (addr,send_packets)
+                                print ' '+str(send_packets)+' now in queue'
                 else:
                     print 'non auth message'
                     utils.receive_non_auth_message(data)
@@ -70,6 +75,11 @@ class TunnelServer(object):
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
                             utils.message_for_client(clientIP.dst,data)
+                            send_packets = utils.get_messages_for_client(clientIP.dst)
+                            if send_packets != None:
+                                send_info = (addr,send_packets)
+                                print ' '+str(send_packets)+' now in queue'
+                                
                     else:
                         # iptables forward
                         print 'iptables will forward if it could'
