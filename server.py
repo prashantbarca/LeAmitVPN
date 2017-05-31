@@ -67,7 +67,7 @@ class TunnelServer(object):
                         # first get client address
                         clientIP = IP(data)
                         if clientIP:
-                            cliaddr = clientIP.src
+                            cliaddr = clientIP.dst
                             
                             print 'sender: '+str(cliaddr)
                             # add to queue for client
