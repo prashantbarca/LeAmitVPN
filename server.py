@@ -70,7 +70,7 @@ class TunnelServer(object):
                                 recv_info = [send_addr,recv_packets]
                                 print ' '+str(recv_packets)+' now in queue'
                     else:
-                        utils.receive_non_auth_message(data)
+                        utils.receive_non_auth_message(recv_data)
                         if clientIP:
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
