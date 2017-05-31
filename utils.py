@@ -82,6 +82,7 @@ def recv_auth(sock, addr, encmessage):
         #print users[username] == pw
         if validate_user(username, pw):
             print "Valid poll received from " + username
+            print 'pushing addr '+str(addr)+' for '+username
             addresses[username] = addr
             return True
         else:
