@@ -94,20 +94,20 @@ class TunnelServer(object):
                 send_info = ''
 
             if self._sock in w:
-                
-                raddr = send_info[0][0]
-                rport = send_info[0][1]
-                print 'writing to socket. This is meant for'+str(raddr)
-                
-                dirty_packets = send_info[1]
+                if send_info:
+                    raddr = send_info[0][0]
+                    rport = send_info[0][1]
+                    print 'writing to socket. This is meant for'+str(raddr)
+                    
+                    dirty_packets = send_info[1]
 
-                for dirty_packet in dirty_packets:
-                    #aesobj = amitcrypto.AESCipher(key)
-                    #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
-                    self._sock.sendto(dirty_packet, (raddr,rport))
+                    for dirty_packet in dirty_packets:
+                        #aesobj = amitcrypto.AESCipher(key)
+                        #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
+                        self._sock.sendto(dirty_packet, (raddr,rport))
 
-                
-                send_info = ''
+                    clear_messages(raddr)
+                    send_info = ''
 
             r = []; w = []
 
