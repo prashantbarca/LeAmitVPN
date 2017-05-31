@@ -74,7 +74,7 @@ class TunnelServer(object):
                             utils.message_for_client(clientIP.dst,data)
                             send_packets = utils.get_messages_for_client(clientIP.dst)
                             if send_packets != None:
-                                send_addr = get_public_ip(clientIP.dst)
+                                send_addr = utils.get_public_ip(clientIP.dst)
                                 send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
                 else:
