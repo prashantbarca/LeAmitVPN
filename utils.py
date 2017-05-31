@@ -9,6 +9,8 @@ import md5
 from Crypto.Cipher import XOR
 
 key = "abcdefghijklij"
+xor = XOR.XORCipher(key) # To encrypt
+xor1 = XOR.XORCipher(key) # To decrypt
 
 SERVER_UDP_PORT = 5050            # Random port
 SERVER_UDP_IP = "128.199.177.106" # prashant.at
@@ -62,17 +64,17 @@ def validate_user(username, pw):
 def send_auth_packet(sock, username, pw):
     print "Client -> Server : Sending poll packet"
     message = "username:"+username+":"+pw+":" + str(time.time())
-    xor = XOR.XORCipher(key)
     #print xor.encrypt(message)
     
+    #print xor1.decrypt(xor.encrypt(message)) == message
     sock.sendto(xor.encrypt(message), (SERVER_UDP_IP, 5050))
     #sock.sendto(message, (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
 def recv_auth(sock, addr, encmessage):
-    xor = XOR.XORCipher(key)
-    message = xor.decrypt(encmessage)
+    #xor = XOR.XORCipher(key)
+    message = xor1.decrypt(encmessage)
     #message = encmessage
     #print "Recv auth method entered"
     try:
