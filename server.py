@@ -40,87 +40,77 @@ class TunnelServer(object):
     def run(self):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
+        send_data = ''
         recv_info = ''
-        send_info = ''
         
         while True:
             r, w, x = select.select(r, w, x)
 
             if self._tun in r:
-                recv_packet = self._tun.read(mtu)
-                print 'read'+ str(recv_packet)+ 'from tunnel'
-                clientIP = IP(data)
-                if clientIP:
-                    send_addr = utils.get_public_ip(clientIP.dst)
-                    recv_info = (send_addr,recv_packet)
-                    print str(recv_packet)+' in queue'
-
+                send_data = self._tun.read(mtu)
+                send_info = list(send_data)
+                print 'read'+ str(send_data)+ 'from tunnel'
+                
             if self._sock in r:
-                data, addr =  self._sock.recvfrom(65535)
+                recv_data, addr =  self._sock.recvfrom(65535)
 
-                auth = utils.recv_auth(self._sock, addr, data)
+                auth = utils.recv_auth(self._sock, addr, recv_data)
                 exists = utils.check_if_addr_exists(addr)
                 
                 if exists != None:
                     # first get client address
-                    clientIP = IP(data)
+                    clientIP = IP(recv_data)
                     # authorization packet
                     if auth == True:
                         if clientIP:
                             # get message queue and send one by one
-                            send_packets = utils.get_messages_for_client(clientIP.src)
-                            if send_packets != None:
+                            recv_packets = utils.get_messages_for_client(clientIP.src)
+                            if recv_packets != None:
                                 send_addr = get_public_ip(clientIP.src)
-                                send_info = (send_addr,send_packets)
-                                print ' '+str(send_packets)+' now in queue'
+                                recv_info = [send_addr,recv_packets]
+                                print ' '+str(recv_packets)+' now in queue'
                     else:
                         utils.receive_non_auth_message(data)
                         if clientIP:
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
-                            utils.message_for_client(clientIP.dst,data)
-                            send_packets = utils.get_messages_for_client(clientIP.dst)
-                            if send_packets != None:
+                            utils.message_for_client(clientIP.dst,recv_data)
+                            recv_packets = utils.get_messages_for_client(clientIP.dst)
+                            if recv_packets != None:
                                 send_addr = utils.get_public_ip(clientIP.dst)
-                                send_info = (send_addr,send_packets)
-                                print ' '+str(send_packets)+' now in queue'
+                                recv_info = [send_addr,recv_packets]
+                                print ' '+str(recv_packets)+' now in queue'
                 else:
                     # iptables forward
-                    print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(data)+ 'if it could'
+                    print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_data)+ 'if it could'
                     raddr = addr[0]
                     rport = addr[1]
                     #aesobj = amitcrypto.AESCipher(key)
                     #self._sock.sendto(aesobj.encrypt(data),(raddr,rport))
-                    self._sock.sendto(data,(raddr,rport))
+                    self._sock.sendto(recv_data,(raddr,rport))
 
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
-                if send_info:
-                    self._tun.write(send_info)
+                if recv_info:
+                    self._tun.write(recv_info)
                     send_info = ''
 
             if self._sock in w:
-                if recv_info:
-                    raddr = recv_info[0][0]
-                    rport = recv_info[0][1]
+                if send_info:
+                    raddr = send_info[0][0]
+                    rport = send_info[0][1]
                     print 'writing to socket. This is meant for'+str(raddr)
                     
-                    dirty_packets = recv_info[1]
+                    dirty_packets = send_info[1]
 
                     for dirty_packet in dirty_packets:
                         #aesobj = amitcrypto.AESCipher(key)
                         #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
                         self._sock.sendto(dirty_packet, (raddr,rport))
 
-                    utils.clear_messages(recv_info[0])
-                    send_info = ''
-                if recv_info:
-                    
-                    raddr = recv_info[0][0]
-                    rport = recv_info[0][1]
-
-                    self._sock.sendto(recv_info[1], (raddr,rport))
+                    utils.clear_messages(send_info[0])
+                    recv_info = ''
 
             r = []; w = []
 
