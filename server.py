@@ -18,6 +18,7 @@ import select
 import errno
 import pytun
 import utils
+import amitcrypto
 from scapy.all import IP,UDP,Raw
 
 def swap_src_and_dst(pkt, layer):
@@ -82,7 +83,7 @@ class TunnelServer(object):
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(data)+ 'if it could'
                     raddr = addr[0]
                     rport = addr[1]
-                    aesobj = amitcrypto.AESCipher(key)
+                    #aesobj = amitcrypto.AESCipher(key)
                     #self._sock.sendto(aesobj.encrypt(data),(raddr,rport))
                     self._sock.sendto(data,(raddr,rport))
 
@@ -102,7 +103,7 @@ class TunnelServer(object):
 
                 
                 for dirty_packet in dirty_packets:
-                    aesobj = amitcrypto.AESCipher(key)
+                    #aesobj = amitcrypto.AESCipher(key)
                     #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
                     self._sock.sendto(dirty_packet, (raddr,rport))
                     
