@@ -1,13 +1,13 @@
 
 from scapy.all import *
-from amitcrypto import *
+import amitcrypto
 
 import time
 import socket
 import os
-import pytap
 import md5
 
+key = "abcdefghijklij"
 
 STATES = ["Closed", "Authenticated"]              # Label of states for client
 current_states = {"10.10.0.2": 0, "10.10.0.3": 0} # State machine for client
@@ -48,14 +48,14 @@ def validate_user(username, pw):
 # Client sends authentication message
 def send_auth_packet(sock, username, pw):
     message = "username:"+username+":"+md5.new(pw).digest()+":" + str(time.time())
-    aesobj = AESCipher.new(key)
+    aesobj = amitcrypto.AESCipher(key)
     
     sock.sendto(aesobj.encrypt(message), (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
 def recv_auth(sock, addr, encmessage):
-    aesobj = AESCipher.new(key)
+    aesobj = amitcrypto.AESCipher(key)
     message = aesobj.decrypt(encmessage)
     print "Recv auth method entered"
     try:

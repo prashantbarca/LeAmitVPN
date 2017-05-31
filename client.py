@@ -8,7 +8,6 @@ import errno
 import pytun
 import utils
 
-key = "abcdefghijklij"
 class TunnelClient(object):
 
     def __init__(self, taddr, tdstaddr, tmask, tmtu, laddr, lport, raddr, rport):
