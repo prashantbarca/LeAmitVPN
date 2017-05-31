@@ -41,7 +41,6 @@ class TunnelServer(object):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
         send_info = ''
-        recv_info = ''
         send_addr = ''
         recv_packet = ''
         send_packet = ''
@@ -98,7 +97,7 @@ class TunnelServer(object):
                 if recv_packet:
                     print 'writing to tunnel' + str(recv_packet)
                     self._tun.write(recv_packet)
-                    recv_info = ''
+                    recv_packet = ''
 
             if self._sock in w:
                 if send_info:
