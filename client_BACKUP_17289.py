@@ -7,7 +7,6 @@ import select
 import errno
 import pytun
 import utils
-import time
 
 class TunnelClient(object):
 
@@ -31,6 +30,11 @@ class TunnelClient(object):
         data = ''
         to_sock = ''
 
+<<<<<<< HEAD
+=======
+        utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+        
+>>>>>>> bede90d0f6ea5294d482efd64135f09816b5025b
         while True:
             try:
                 r, w, x = select.select(r, w, x)
@@ -38,7 +42,7 @@ class TunnelClient(object):
                 cur_time = time.time()
 
                 if cur_time - self._time > 5:
-                    utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+                    auth.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
                     self._time = time.time()
                 
                 if self._tun in r:

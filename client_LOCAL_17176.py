@@ -6,8 +6,7 @@ import socket
 import select
 import errno
 import pytun
-import utils
-import time
+import auth
 
 class TunnelClient(object):
 
@@ -18,7 +17,7 @@ class TunnelClient(object):
         self._tun.netmask = tmask
         self._tun.mtu = tmtu
         self._tun.up()
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.bind((laddr, lport))
         self._raddr = raddr
         self._rport = rport
@@ -38,7 +37,7 @@ class TunnelClient(object):
                 cur_time = time.time()
 
                 if cur_time - self._time > 5:
-                    utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+                    auth.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
                     self._time = time.time()
                 
                 if self._tun in r:

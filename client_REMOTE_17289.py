@@ -7,7 +7,6 @@ import select
 import errno
 import pytun
 import utils
-import time
 
 class TunnelClient(object):
 
@@ -22,8 +21,7 @@ class TunnelClient(object):
         self._sock.bind((laddr, lport))
         self._raddr = raddr
         self._rport = rport
-        self._interval = 5 # 5 seconds is the timer interval
-        self._time = 0
+        self._isAuthenticated = False
         
     def run(self):
         mtu = self._tun.mtu
@@ -31,16 +29,11 @@ class TunnelClient(object):
         data = ''
         to_sock = ''
 
+        utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+        
         while True:
             try:
                 r, w, x = select.select(r, w, x)
-                # check if we need to fire a poll
-                cur_time = time.time()
-
-                if cur_time - self._time > 5:
-                    utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
-                    self._time = time.time()
-                
                 if self._tun in r:
                     to_sock = self._tun.read(mtu)
                 if self._sock in r:
@@ -54,8 +47,11 @@ class TunnelClient(object):
                     data = ''
                 if self._sock in w:
                     #to_sock = "test"+to_sock+"test"
-                    self._sock.sendto(to_sock, (self._raddr, self._rport))
-                    to_sock = ''
+                    if self._isAuthenticated == True:
+                        self._sock.sendto(to_sock, (self._raddr, self._rport))
+                        to_sock = ''
+                    else:
+                        auth.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
                         
                 r = []; w = []
                 if data:

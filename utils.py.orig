@@ -9,6 +9,11 @@ import md5
 
 key = "abcdefghijklij"
 
+<<<<<<< HEAD
+=======
+STATES = ["Closed", "Authenticated"]              # Label of states for client
+current_states = {"10.10.0.2": 0, "10.10.0.3": 0} # State machine for client
+>>>>>>> bede90d0f6ea5294d482efd64135f09816b5025b
 SERVER_UDP_PORT = 5050            # Random port
 SERVER_UDP_IP = "128.199.177.106" # prashant.at
 
@@ -59,12 +64,17 @@ def recv_auth(sock, addr, encmessage):
     try:
         username = message.split(':')[1]
         pw = message.split(':')[2]
+<<<<<<< HEAD
+        if validate_user(username, pw) and message not in auth_messages[username]:
+=======
         #print username
         #print pw, len(pw)
         #print users[username], len(users[username])
         #print users[username] == pw
         if validate_user(username, pw):
             print "Authenticated"
+            sock.sendto("Authenticated", addr)
+>>>>>>> bede90d0f6ea5294d482efd64135f09816b5025b
             addresses[username] = addr
             return True
         else:
