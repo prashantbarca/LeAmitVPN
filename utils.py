@@ -6,6 +6,7 @@ import time
 import socket
 import os
 import md5
+from Crypto.Cipher import XOR
 
 key = "abcdefghijklij"
 
@@ -61,17 +62,18 @@ def validate_user(username, pw):
 def send_auth_packet(sock, username, pw):
     print "Client -> Server : Sending poll packet"
     message = "username:"+username+":"+pw+":" + str(time.time())
-    aesobj = amitcrypto.AESCipher(key)
+    xor = XOR.XORCipher(key)
+    #print xor.encrypt(message)
     
-    #sock.sendto(aesobj.encrypt(message), (SERVER_UDP_IP, 5050))
-    sock.sendto(message, (SERVER_UDP_IP, 5050))
+    sock.sendto(xor.encrypt(message), (SERVER_UDP_IP, 5050))
+    #sock.sendto(message, (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
 def recv_auth(sock, addr, encmessage):
-    aesobj = amitcrypto.AESCipher(key)
-    #message = aesobj.decrypt(encmessage)
-    message = encmessage
+    xor = XOR.XORCipher(key)
+    message = xor.decrypt(encmessage)
+    #message = encmessage
     #print "Recv auth method entered"
     try:
         username = message.split(':')[1]
