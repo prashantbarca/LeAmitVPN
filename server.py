@@ -96,6 +96,7 @@ class TunnelServer(object):
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
                 if recv_packet:
+                    print 'writing to tunnel' + str(recv_packet)
                     self._tun.write(recv_packet)
                     recv_info = ''
 
