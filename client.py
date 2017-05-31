@@ -37,9 +37,9 @@ class TunnelClient(object):
                 # check if we need to fire a poll
                 cur_time = time.time()
 
-                if cur_time - self._time > 5:
-                    utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
-                    self._time = time.time()
+                #if cur_time - self._time > 5:
+                utils.send_auth_packet(self._sock, '10.10.0.2', 'pw1')
+                self._time = time.time()
                 
                 if self._tun in r:
                     to_sock = self._tun.read(mtu)
