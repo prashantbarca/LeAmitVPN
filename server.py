@@ -49,9 +49,9 @@ class TunnelServer(object):
             r, w, x = select.select(r, w, x)
 
             if self._tun in r:
-                send_data = self._tun.read(mtu)
+                send_packet = self._tun.read(mtu)
                 send_info = [send_addr,recv_packets]
-                print 'read'+ str(send_data)+ 'from tunnel'
+                print 'read'+ str(send_packet)+ 'from tunnel'
                 
             if self._sock in r:
                 recv_packet, addr =  self._sock.recvfrom(65535)
@@ -112,6 +112,7 @@ class TunnelServer(object):
 
                     utils.clear_messages(send_info[0])
                     send_info = ''
+                    recv_packets = ''
 
             r = []; w = []
 
