@@ -51,33 +51,38 @@ class TunnelServer(object):
             if self._sock in r:
                 data, addr =  self._sock.recvfrom(65535)
 
-                
-                auth = utils.recv_auth(self._sock, addr, data)
-                if auth == True:
-                    exists = utils.check_if_addr_exists(addr)
-                    if exists != None:
+                exists = utils.check_if_addr_exists(addr)
+                if exists != None:
+                    auth = utils.recv_auth(self._sock, addr, data)
+                    if auth == True:
+
                         # first get client address
                         clientIP = IP(data)
+
                         if clientIP:
                             # get message queue and send one by one
                             send_packets = utils.get_messages_for_client(clientIP.src)
                             if send_packets != None:
-                                send_info = (addr,send_packets)
+                                send_addr = get_public_ip(clientIP.src)
+                                send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
                 else:
                     print 'non auth message'
-                    utils.receive_non_auth_message(data)
                     exists = utils.check_if_addr_exists(addr)
                     if exists != None:
+                        utils.receive_non_auth_message(self._sock, addr, data)
+
                         # first get client address
                         clientIP = IP(data)
+
                         if clientIP:
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
                             utils.message_for_client(clientIP.dst,data)
                             send_packets = utils.get_messages_for_client(clientIP.dst)
                             if send_packets != None:
-                                send_info = (addr,send_packets)
+                                send_addr = get_public_ip(clientIP.dst)
+                                send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
                                 
                     else:
