@@ -58,6 +58,9 @@ class TunnelServer(object):
                 	# get message queue and send one by one
                     send_packets = utils.get_message_queue(addr)
                     send_info = (addr,send_packets)
+                else:
+                    receive_non_auth_message(data)
+
 
             if self._tun in w:
                 # Encryption ?
