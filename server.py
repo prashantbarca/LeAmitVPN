@@ -106,7 +106,7 @@ class TunnelServer(object):
                         #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
                         self._sock.sendto(dirty_packet, (raddr,rport))
 
-                    utils.clear_messages(raddr)
+                    utils.clear_messages(send_info[0])
                     send_info = ''
 
             r = []; w = []
