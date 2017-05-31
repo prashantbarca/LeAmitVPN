@@ -42,13 +42,14 @@ class TunnelServer(object):
         r = [self._tun, self._sock]; w = []; x = []
         send_info = ''
         recv_info = ''
+        send_addr = ''
         
         while True:
             r, w, x = select.select(r, w, x)
 
             if self._tun in r:
                 send_data = self._tun.read(mtu)
-                send_info = list(send_data)
+                send_info = [send_addr,send_data]
                 print 'read'+ str(send_data)+ 'from tunnel'
                 
             if self._sock in r:
@@ -67,7 +68,7 @@ class TunnelServer(object):
                             recv_packets = utils.get_messages_for_client(clientIP.src)
                             if recv_packets != None:
                                 send_addr = get_public_ip(clientIP.src)
-                                recv_info = [send_addr,recv_packets]
+                                recv_info = list(recv_packets_
                                 print ' '+str(recv_packets)+' now in queue'
                     else:
                         utils.receive_non_auth_message(recv_data)
@@ -79,7 +80,7 @@ class TunnelServer(object):
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
                                 send_addr = utils.get_public_ip(clientIP.dst)
-                                recv_info = [send_addr,recv_packets]
+                                recv_info = list(recv_packets)
                                 print ' '+str(recv_packets)+' now in queue'
                 else:
                     # iptables forward
@@ -94,7 +95,7 @@ class TunnelServer(object):
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
                 if recv_info:
-                    self._tun.write(str(recv_info))
+                    self._tun.write(recv_info)
                     recv_info = ''
 
             if self._sock in w:
