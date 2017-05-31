@@ -68,7 +68,9 @@ class TunnelClient(object):
                     print 'read'+str(to_sock)+ 'from tunnel'
                     
                 if self._sock in r:
+                    xor = XOR.XORCipher(utils.key)
                     data, addr = self._sock.recvfrom(65535)
+                    data = xor.decrypt(data)
                     #aesobj = amitcrypto.AESCipher(key)
                     #data = aesobj.decrypt(data)
                     #data = aesobj.decrypt(data)
@@ -82,7 +84,10 @@ class TunnelClient(object):
                 if self._sock in w:
                     print 'writing to socket'
                     #to_sock = "test"+to_sock+"test"
-                    self._sock.sendto(to_sock, (self._raddr, self._rport))
+
+                    xor = XOR.XORCipher(utils.key)
+                    #self._sock.sendto(to_sock, (self._raddr, self._rport))
+                    self._sock.sendto(xor.encrypt(to_sock), (self._raddr, self._rport))
                     to_sock = ''
                         
                 r = []; w = []

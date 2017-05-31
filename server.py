@@ -50,8 +50,9 @@ class TunnelServer(object):
                 recv_packet = self._tun.read(mtu)
                 print 'read'+ str(recv_packet)+ 'from tunnel'
             if self._sock in r:
+                xor = XOR.XORCipher(utils.key)
                 data, addr =  self._sock.recvfrom(65535)
-
+                data = xor.decrypt(data)
                 auth = utils.recv_auth(self._sock, addr, data)
                 exists = utils.check_if_addr_exists(addr)
                 
@@ -83,9 +84,9 @@ class TunnelServer(object):
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(data)+ 'if it could'
                     raddr = addr[0]
                     rport = addr[1]
-                    #aesobj = amitcrypto.AESCipher(key)
-                    #self._sock.sendto(aesobj.encrypt(data),(raddr,rport))
-                    self._sock.sendto(data,(raddr,rport))
+                    xor = XOR.XORCipher(utils.key)
+                    #self._sock.sendto(data,(raddr,rport))
+                    self._sock.sendto(xor.encrypt(data),(raddr,rport))
 
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
@@ -102,9 +103,9 @@ class TunnelServer(object):
                     dirty_packets = send_info[1]
 
                     for dirty_packet in dirty_packets:
-                        #aesobj = amitcrypto.AESCipher(key)
-                        #self._sock.sendto(aesobj.encrypt(dirty_packet),(raddr,rport))
-                        self._sock.sendto(dirty_packet, (raddr,rport))
+                        xor = XOR.XORCipher(utils.key)
+                        #self._sock.sendto(dirty_packet, (raddr,rport))
+                        self._sock.sendto(xor.encrypt(dirty_packet), (raddr,rport))
 
                     utils.clear_messages(send_info[0])
                     send_info = ''
