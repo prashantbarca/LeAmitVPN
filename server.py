@@ -76,6 +76,7 @@ class TunnelServer(object):
                             # add to queue for client
                             utils.message_for_client(clientIP.dst,recv_data)
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
+                            print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
                                 send_addr = utils.get_public_ip(clientIP.dst)
                                 recv_info = [send_addr,recv_packets]
@@ -110,7 +111,7 @@ class TunnelServer(object):
                         self._sock.sendto(dirty_packet, (raddr,rport))
 
                     utils.clear_messages(send_info[0])
-                    recv_info = ''
+                    send_info = ''
 
             r = []; w = []
 
@@ -119,6 +120,7 @@ class TunnelServer(object):
                 w.append(self._tun)
             else:
                 r.append(self._sock)
+            
             if send_info:
                 w.append(self._sock)
             else:
