@@ -58,7 +58,9 @@ class TunnelServer(object):
             if self._sock in r:
                 #xor = XOR.XORCipher(utils.key)
                 data, addr =  self._sock.recvfrom(65535)
+                print data
                 data = utils.xor1.decrypt(data)
+                print data
                 auth = utils.recv_auth(self._sock, addr, data)
                 exists = utils.check_if_addr_exists(addr)
                 
