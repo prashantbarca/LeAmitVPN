@@ -40,7 +40,7 @@ class TunnelServer(object):
     def run(self):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
-        send_data = ''
+        send_info = ''
         recv_info = ''
         
         while True:
