@@ -19,6 +19,7 @@ messages = {"10.10.0.2": [], "10.10.0.3": []}
 # get a message for another client
 def receive_non_auth_message(data):
     packet = IP(data)
+    print packet.summary()
 
 # get client message queue object
 def get_message_queue(addr):
