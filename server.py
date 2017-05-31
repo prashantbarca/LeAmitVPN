@@ -59,7 +59,7 @@ class TunnelServer(object):
                     send_packets = utils.get_message_queue(addr)
                     send_info = (addr,send_packets)
                 else:
-                    receive_non_auth_message(data)
+                    utils.receive_non_auth_message(data)
 
 
             if self._tun in w:
