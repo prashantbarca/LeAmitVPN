@@ -67,7 +67,7 @@ class TunnelServer(object):
                                 send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
                     else:
-                        utils.receive_non_auth_message(self._sock, addr, data)
+                        utils.receive_non_auth_message(data)
                         if clientIP:
                             print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
