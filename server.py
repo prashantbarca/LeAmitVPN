@@ -67,11 +67,9 @@ class TunnelServer(object):
                         # first get client address
                         clientIP = IP(data)
                         if clientIP:
-                            cliaddr = clientIP.dst
-                            
-                            print 'sender: '+str(cliaddr)
+                            print 'sender: '+str(clientIP.src)+' receiver: '+str(clientIP.dst)
                             # add to queue for client
-                            utils.message_for_client(cliaddr,data)
+                            utils.message_for_client(clientIP.dst,data)
                     else:
                         # iptables forward
                         print 'iptables will forward if it could'

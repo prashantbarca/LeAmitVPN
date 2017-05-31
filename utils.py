@@ -30,14 +30,16 @@ def get_message_queue(addr):
 
 # received a message for the client
 def message_for_client(addr,message):
-    idx = get_message_queue(addr)
-    if idx != None:
-        messages[idx].append(message)
+    address = get_message_queue(addr)
+    
+    if address != None:
+        print 'appending '+str(message)+' for '+address
+        messages[address].append(message)
 
 def get_messages_for_client(addr):
-    idx = get_message_queue(addr)
-    if idx != None:
-        return messages[idx]
+    address = get_message_queue(addr)
+    if address != None:
+        return messages[address]
     else:
         return None
 
