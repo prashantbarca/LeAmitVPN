@@ -47,7 +47,7 @@ class TunnelServer(object):
 
             if self._tun in r:
                 recv_packet = self._tun.read(mtu)
-
+                print 'reading from tunnel'
             if self._sock in r:
                 data, addr =  self._sock.recvfrom(65535)
 
@@ -57,7 +57,9 @@ class TunnelServer(object):
                 	# get message queue and send one by one
                     send_packets = utils.get_message_queue(addr)
                     send_info = (addr,send_packets)
+                    print ' '+str(send_packets)+' now in queue'
                 else:
+                    print 'non auth message'
                     utils.receive_non_auth_message(data)
                     exists = utils.check_if_addr_exists(addr)
                     if exists != None:
@@ -65,22 +67,30 @@ class TunnelServer(object):
                         clientIP = IP(data)
                         if clientIP:
                             cliaddr = clientIP.src
+                            
+                            print 'sender: '+str(cliaddr)
                             # add to queue for client
                             message_for_client(cliaddr,data)
                     else:
                         # iptables forward
+                        print 'iptables will forward if it could'
                         raddr = addr[0]
                         rport = addr[1]
                         self._sock.sendto(data,(raddr,rport))
 
             if self._tun in w:
+                print 'no encryption yet, writing to tunnel'
                 # Encryption ?
                 self._tun.write(send_info)
                 send_info = ''
 
             if self._sock in w:
+                
                 raddr = send_info[0][0]
                 rport = send_info[0][1]
+                
+                print 'writing to socket. This is meant for'+str(raddr)
+                
                 dirty_packets = send_info[1]
                 
                 for dirty_packet in dirty_packets:
