@@ -124,11 +124,11 @@ class TunnelServer(object):
 
             r = []; w = []
 
-            if recv_info:
+            if send_info:
                 w.append(self._tun)
             else:
                 r.append(self._sock)
-            if send_info:
+            if recv_info:
                 w.append(self._sock)
             else:
                 r.append(self._tun)
