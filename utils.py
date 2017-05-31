@@ -57,14 +57,14 @@ def send_auth_packet(sock, username, pw):
 def recv_auth(sock, addr, encmessage):
     aesobj = amitcrypto.AESCipher(key)
     message = aesobj.decrypt(encmessage)
-    print "Recv auth method entered"
+    #print "Recv auth method entered"
     try:
         username = message.split(':')[1]
         pw = message.split(':')[2]
-        print username
-        print pw, len(pw)
-        print users[username], len(users[username])
-        print users[username] == pw
+        #print username
+        #print pw, len(pw)
+        #print users[username], len(users[username])
+        #print users[username] == pw
         if validate_user(username, pw):
             print "Authenticated"
             sock.sendto("Authenticated", addr)
