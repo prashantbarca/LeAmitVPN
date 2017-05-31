@@ -64,9 +64,7 @@ def validate_user(username, pw):
 def send_auth_packet(sock, username, pw):
     print "Client -> Server : Sending poll packet"
     message = "username:"+username+":"+pw+":" + str(time.time())
-    #print xor.encrypt(message)
-    
-    #print xor1.decrypt(xor.encrypt(message)) == message
+    print message == xor1.decrypt(xor.encrypt(message))
     sock.sendto(xor.encrypt(message), (SERVER_UDP_IP, 5050))
     #sock.sendto(message, (SERVER_UDP_IP, 5050))
     return
