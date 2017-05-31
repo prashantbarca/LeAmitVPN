@@ -101,6 +101,6 @@ def check_if_addr_exists(addr):
     for k,v in addresses.iteritems():
         #print 'value type : ' + str(type(v)) + 'value addr: '+ str(type(addr))
         #print 'address key '+str(k)+' public ip '+str(v) + 'addr ' + str(addr)
-        if v[0] == addr:
+        if v != None and v[0] == addr:
             return k
     return None
