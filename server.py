@@ -53,7 +53,7 @@ class TunnelServer(object):
                 data, addr =  self._sock.recvfrom(65535)
 
                 
-                auth = utils.recv_auth(self._sock, addr, raw_data)
+                auth = utils.recv_auth(self._sock, addr, data)
                 if auth == True:
                 	# get message queue and send one by one
                     send_packets = utils.get_message_queue(addr)
