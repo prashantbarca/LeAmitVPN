@@ -5,14 +5,11 @@ from amitcrypto import *
 import time
 import socket
 import os
-import pytap
 import md5
 
 
-STATES = ["Closed", "Authenticated"]              # Label of states for client
-current_states = {"10.10.0.2": 0, "10.10.0.3": 0} # State machine for client
-SERVER_TCP_PORT = 5050            # Random port
-SERVER_TCP_IP = "128.199.177.106" # prashant.at
+SERVER_UDP_PORT = 5050            # Random port
+SERVER_UDP_IP = "128.199.177.106" # prashant.at
 
 users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()} # Keeps track of usernames and passwords. I know MD5 is bad!
 addresses = {"10.10.0.2": None, "10.10.0.3": None} # Keeps track of current communicating person
@@ -56,15 +53,19 @@ def recv_auth(sock, addr, message):
         username = message.split(':')[1]
         pw = message.split(':')[2]
         if validate_user(username, pw) and message not in auth_messages[username]:
-            sock.sendto("Authenticated", addr)
             addresses[username] = addr
-            current_states[username] = 1
-            messages[username].append(message)
             return True
         else:
             return False
     except:
         return False
+
+# get public ip for user
+def get_public_ip(addr):
+    for k,v in addresses.iteritems():
+        if k == addr:
+            return v
+    return None
 
 # Check if addr exists in dictionary
 def check_if_addr_exists(addr):
