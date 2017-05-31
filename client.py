@@ -3,6 +3,7 @@
 import sys
 import optparse
 import socket
+from scapy.all import IP
 import select
 import errno
 import pytun
@@ -58,8 +59,9 @@ class TunnelClient(object):
                 r, w, x = select.select(r, w, x)
                 
                 if self._tun in r:
-                    print 'reading from tunnel'
                     to_sock = self._tun.read(mtu)
+                    print 'read'+str(to_sock)+ 'from tunnel'
+                    
                 if self._sock in r:
                     data, addr = self._sock.recvfrom(65535)
                     print data
