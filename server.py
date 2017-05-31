@@ -40,7 +40,7 @@ class TunnelServer(object):
     def run(self):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
-        recv_packet = ''
+        recv_info = ''
         send_info = ''
         
         while True:
@@ -49,6 +49,12 @@ class TunnelServer(object):
             if self._tun in r:
                 recv_packet = self._tun.read(mtu)
                 print 'read'+ str(recv_packet)+ 'from tunnel'
+                clientIP = IP(data)
+                if clientIP:
+                    send_addr = utils.get_public_ip(clientIP.dst)
+                    recv_info = (send_addr,recv_packet)
+                    print str(recv_packet)+' in queue'
+
             if self._sock in r:
                 data, addr =  self._sock.recvfrom(65535)
 
@@ -90,8 +96,9 @@ class TunnelServer(object):
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
-                self._tun.write(send_info)
-                send_info = ''
+                if send_info:
+                    self._tun.write(send_info)
+                    send_info = ''
 
             if self._sock in w:
                 if send_info:
@@ -108,10 +115,16 @@ class TunnelServer(object):
 
                     utils.clear_messages(send_info[0])
                     send_info = ''
+                if recv_info:
+                    
+                    raddr = recv_info[0][0]
+                    rport = recv_info[0][1]
+
+                    self._sock.sendto(recv_info[1], (raddr,rport))
 
             r = []; w = []
 
-            if recv_packet:
+            if recv_info:
                 w.append(self._tun)
             else:
                 r.append(self._sock)
