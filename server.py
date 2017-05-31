@@ -94,7 +94,6 @@ class TunnelServer(object):
                 
                 raddr = send_info[0][0]
                 rport = send_info[0][1]
-                
                 print 'writing to socket. This is meant for'+str(raddr)
                 
                 dirty_packets = send_info[1]
