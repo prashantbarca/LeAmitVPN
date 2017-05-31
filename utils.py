@@ -44,9 +44,9 @@ def get_messages_for_client(addr):
     else:
         return None
 
-def clear_messages(public_ip):
-    print 'public ip is '+str(public_ip)
-    lan_addr = check_if_addr_exists(public_ip)
+def clear_messages(addr):
+    print 'public ip is '+str(addr[0])
+    lan_addr = check_if_addr_exists(addr)
     print 'clearing messages for '+str(lan_addr)
     if lan_addr != None:
         messages[lan_addr] = []
@@ -84,6 +84,7 @@ def recv_auth(sock, addr, encmessage):
         #print users[username] == pw
         if validate_user(username, pw):
             print "Valid poll received from " + username
+            print 'pushing addr '+str(addr)+' for '+username
             addresses[username] = addr
             return True
         else:
@@ -103,6 +104,6 @@ def check_if_addr_exists(addr):
     for k,v in addresses.iteritems():
         #print 'value type : ' + str(type(v)) + 'value addr: '+ str(type(addr))
         #print 'address key '+str(k)+' public ip '+str(v) + 'addr ' + str(addr)
-        if v != None and v[0] == addr:
+        if v != None and v[0] == addr[0] and v[1] == addr[1]:
             return k
     return None
