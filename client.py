@@ -18,7 +18,7 @@ def signal_handler(signal, frame):
 
 class TunnelClient(object):
 
-    def __init__(self, taddr, tdstaddr, tmask, tmtu, laddr, lport, raddr, rport):
+    def __init__(self, taddr, tdstaddr, tmask, tmtu, laddr, lport, raddr, rport, rpw):
         self._tun = pytun.TunTapDevice("leamit0",flags=pytun.IFF_TUN|pytun.IFF_NO_PI)
         self._tun.addr = taddr
         self._tun.dstaddr = tdstaddr
@@ -29,6 +29,7 @@ class TunnelClient(object):
         self._sock.bind((laddr, lport))
         self._raddr = raddr
         self._rport = rport
+        self._rpw = rpw
         self._interval = 5 # 5 seconds is the timer interval
         self._time = 0
 
@@ -64,8 +65,10 @@ class TunnelClient(object):
                     
                 if self._sock in r:
                     data, addr = self._sock.recvfrom(65535)
-                    print data
-                    print 'received'
+                    aesobj = amitcrypto.AESCipher(key)
+                    #data = aesobj.decrypt(data)
+                    data = aesobj.decrypt(data)
+                    print 'received ' + data
                     if addr[0] != self._raddr or addr[1] != self._rport:
                         data = '' # drop packet
                 if self._tun in w:
@@ -102,6 +105,8 @@ def main():
             help='set tunnel destination address')
     parser.add_option('--tun-netmask', default='255.255.255.0',dest='tmask',
             help='set tunnel netmask')
+    parser.add_option('--pw', dest='pw',
+            help='set password with pw')
 
     tun_mtu = 1500
     remote_addr = "128.199.177.106"
@@ -113,12 +118,12 @@ def main():
             help='set local port [%default]')
 
     opt, args = parser.parse_args()
-    if not (opt.taddr and opt.tdstaddr):
+    if not (opt.taddr and opt.tdstaddr and opt.pw):
         parser.print_help()
         return 1
     try:
         server = TunnelClient(opt.taddr, opt.tdstaddr, opt.tmask, tun_mtu,
-                              opt.laddr, opt.lport, remote_addr, remote_port)
+                              opt.laddr, opt.lport, remote_addr, remote_port, opt.pw)
     except (pytun.Error, socket.error), e:
         print >> sys.stderr, str(e)
         return 1
