@@ -47,11 +47,16 @@ def validate_user(username, pw):
 
 # Client sends authentication message
 def send_auth_packet(sock, username, pw):
-    sock.sendto("username:"+username+":"+md5.new(pw).digest()+":"+ str(time.time()), (SERVER_UDP_IP, 5050))
+    message = "username:"+username+":"+md5.new(pw).digest()+":" + str(time.time())
+    aesobj = AESCipher.new(key)
+    
+    sock.sendto(aesobj.encrypt(message), (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
-def recv_auth(sock, addr, message):
+def recv_auth(sock, addr, encmessage):
+    aesobj = AESCipher.new(key)
+    message = aesobj.decrypt(encmessage)
     print "Recv auth method entered"
     try:
         username = message.split(':')[1]

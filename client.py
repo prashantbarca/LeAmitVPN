@@ -8,6 +8,7 @@ import errno
 import pytun
 import utils
 
+key = "abcdefghijklij"
 class TunnelClient(object):
 
     def __init__(self, taddr, tdstaddr, tmask, tmtu, laddr, lport, raddr, rport):
@@ -18,9 +19,7 @@ class TunnelClient(object):
         self._tun.mtu = tmtu
         self._tun.up()
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        print "socket created"
         self._sock.bind((laddr, lport))
-        print "socket connected"
         self._raddr = raddr
         self._rport = rport
         self._isAuthenticated = False
