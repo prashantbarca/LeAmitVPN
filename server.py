@@ -47,15 +47,16 @@ class TunnelServer(object):
 
             if self._tun in r:
                 recv_packet = self._tun.read(mtu)
-                print 'reading from tunnel'
+                print 'read'+ str(recv_packet)+ 'from tunnel'
             if self._sock in r:
                 data, addr =  self._sock.recvfrom(65535)
 
+                auth = utils.recv_auth(self._sock, addr, data)
                 exists = utils.check_if_addr_exists(addr)
+                
                 if exists != None:
                     # first get client address
                     clientIP = IP(data)
-                    auth = utils.recv_auth(self._sock, addr, data)
                     # authorization packet
                     if auth == True:
                         if clientIP:
