@@ -8,6 +8,12 @@ import errno
 import pytun
 import utils
 import time
+from threading import Thread
+import signal
+
+def signal_handler(signal, frame):
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
 
 class TunnelClient(object):
 
@@ -20,13 +26,21 @@ class TunnelClient(object):
         self._tun.up()
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.bind((laddr, lport))
-        utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
         self._raddr = raddr
         self._rport = rport
         self._interval = 5 # 5 seconds is the timer interval
         self._time = 0
-        
+
+    def every_five_seconds(self):
+        while True:
+            print "Looping"
+            utils.send_auth_packet(self._sock, self._tun.addr, utils.users[self._tun.addr])
+            time.sleep(5)
+    
     def run(self):
+        thread = Thread(target = self.every_five_seconds)
+        thread.daemon = True
+        thread.start()
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
         data = ''
@@ -73,6 +87,7 @@ class TunnelClient(object):
                 break
 
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
     parser = optparse.OptionParser()
     parser.add_option('--tun-addr', dest='taddr',
             help='set tunnel local address')

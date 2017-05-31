@@ -50,6 +50,7 @@ def validate_user(username, pw):
 
 # Client sends authentication message
 def send_auth_packet(sock, username, pw):
+    print "Sending poll packet"
     message = "username:"+username+":"+pw+":" + str(time.time())
     aesobj = amitcrypto.AESCipher(key)
     
