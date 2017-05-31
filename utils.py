@@ -14,8 +14,8 @@ SERVER_UDP_PORT = 5050            # Random port
 SERVER_UDP_IP = "128.199.177.106" # prashant.at
 
 users = {"10.10.0.2": md5.new("pw1").digest(), "10.10.0.3": md5.new("pw2").digest()} # Keeps track of usernames and passwords. I know MD5 is bad!
-addresses = {"10.10.0.2": None, "10.10.0.3": None} # Keeps track of current communicating person
-messages = {"10.10.0.2": [], "10.10.0.3": []}
+addresses = {"10.10.0.1":SERVER_UDP_IP,"10.10.0.2": None, "10.10.0.3": None} # Keeps track of current communicating person
+messages = {"10.10.0.1":[],"10.10.0.2": [], "10.10.0.3": []}
 
 # get a message for another client
 def receive_non_auth_message(data):
