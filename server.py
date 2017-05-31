@@ -66,10 +66,7 @@ class TunnelServer(object):
                                 send_addr = get_public_ip(clientIP.src)
                                 send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
-                else:
-                    print 'non auth message'
-                    exists = utils.check_if_addr_exists(addr)
-                    if exists != None:
+                    else:
                         utils.receive_non_auth_message(self._sock, addr, data)
 
                         # first get client address
@@ -85,12 +82,12 @@ class TunnelServer(object):
                                 send_info = (send_addr,send_packets)
                                 print ' '+str(send_packets)+' now in queue'
                                 
-                    else:
-                        # iptables forward
-                        print 'iptables will forward if it could'
-                        raddr = addr[0]
-                        rport = addr[1]
-                        self._sock.sendto(data,(raddr,rport))
+                else:
+                    # iptables forward
+                    print 'iptables will forward if it could'
+                    raddr = addr[0]
+                    rport = addr[1]
+                    self._sock.sendto(data,(raddr,rport))
 
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
