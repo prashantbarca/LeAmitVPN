@@ -99,7 +99,7 @@ def get_public_ip(addr):
 # Check if addr exists in dictionary
 def check_if_addr_exists(addr):
     for k,v in addresses.iteritems():
-        print 'value type : ' + type(v) + 'value addr: '+ type(addr)
+        print 'value type : ' + str(type(v)) + 'value addr: '+ str(type(addr))
         print 'address key '+str(k)+' public ip '+str(v) + 'addr ' + str(addr)
         if v == addr:
             return k
