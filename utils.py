@@ -44,6 +44,7 @@ def get_messages_for_client(addr):
         return None
 
 def clear_messages(public_ip):
+    print 'public ip is '+str(public_ip)
     lan_addr = check_if_addr_exists(public_ip)
     print 'clearing messages for '+str(lan_addr)
     if lan_addr != None:
