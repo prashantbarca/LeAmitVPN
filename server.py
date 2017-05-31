@@ -113,6 +113,7 @@ class TunnelServer(object):
                     utils.clear_messages(send_info[0])
                     send_info = ''
                     recv_packets = ''
+                    send_packet = ''
 
             r = []; w = []
 
