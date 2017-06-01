@@ -49,6 +49,7 @@ class TunnelServer(object):
             r, w, x = select.select(r, w, x)
 
             if self._tun in r:
+                print 'tun read triggered'
                 send_packet = self._tun.read(mtu)
                 ip_pkt = IP(send_packet)
                 send_addr = utils.get_public_ip(ip_pkt.dst)
@@ -69,9 +70,12 @@ class TunnelServer(object):
                         if clientIP:
                             # get message queue and send one by one
                             recv_packets = utils.get_messages_for_client(clientIP.src)
+                            if recv_packets != None and (addr[0] != SERVER_UDP_IP):
+                                for send_pkt in recv_packets:
+                                    self._sock.sendto(send_pkt, addr)
+                                utils.clear_messages(addr)
                             recv_packet = ''
-                            if recv_packets != None:
-                                print ' '+str(recv_packets)+' now in queue'
+                            recv_packets = ''
                     else:
                         utils.receive_non_auth_message(recv_packet)
                         if clientIP:
@@ -81,7 +85,12 @@ class TunnelServer(object):
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
-                                print ' '+str(recv_packets)+' now in queue'
+                                for send_pkt in recv_packets:
+                                    dest = utils.get_public_ip(clientIP.dst)
+                                    self._sock.sendto(send_pkt, dest)
+                                utils.clear_messages(addr)
+                            recv_packet = ''
+                            recv_packets = ''
                 else:
                     # iptables forward
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_packet)+ 'if it could'
@@ -94,10 +103,9 @@ class TunnelServer(object):
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
-                if recv_packet:
-                    print 'writing to tunnel' + str(recv_packet)
+                if recv_packet and recv_packets:
                     self._tun.write(recv_packet)
-                    recv_packet = ''
+                recv_packet = ''
 
             if self._sock in w:
                 if send_info and send_info[0] and send_info[1]:
@@ -125,6 +133,7 @@ class TunnelServer(object):
             if send_packet:
                 w.append(self._sock)
             else:
+                print 'appending self._tun to r'
                 r.append(self._tun)
 
 def main():
