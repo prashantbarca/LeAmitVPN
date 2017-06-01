@@ -41,7 +41,6 @@ class TunnelServer(object):
         mtu = self._tun.mtu
         r = [self._tun, self._sock]; w = []; x = []
         send_info = ''
-        send_addr = ''
         recv_packet = ''
         send_packet = ''
         
@@ -50,6 +49,8 @@ class TunnelServer(object):
 
             if self._tun in r:
                 send_packet = self._tun.read(mtu)
+                ip_pkt = IP(send_packet)
+                send_addr = utils.get_public_ip(ip_pkt.dst)
                 send_info = [send_addr,recv_packets]
                 print 'read'+ str(send_packet)+ 'from tunnel'
                 
@@ -67,7 +68,6 @@ class TunnelServer(object):
                         if clientIP:
                             # get message queue and send one by one
                             recv_packets = utils.get_messages_for_client(clientIP.src)
-                            send_addr = utils.get_public_ip(clientIP.src)
                             recv_packet = ''
                             if recv_packets != None:
                                 print ' '+str(recv_packets)+' now in queue'
@@ -78,7 +78,6 @@ class TunnelServer(object):
                             # add to queue for client
                             utils.message_for_client(clientIP.dst,recv_packet)
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
-                            send_addr = utils.get_public_ip(clientIP.dst)
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
                                 print ' '+str(recv_packets)+' now in queue'
