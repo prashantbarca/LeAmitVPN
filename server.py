@@ -97,7 +97,7 @@ class TunnelServer(object):
                     packet = recv_packet[0]
                     print 'writing to tunnel' + str(packet)
                     self._tun.write(packet)
-                    recv_packet = ''
+                recv_packet = ''
 
             if self._sock in w:
                 if send_info and send_info[0] and send_info[1]:
