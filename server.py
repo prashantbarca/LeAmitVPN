@@ -86,12 +86,6 @@ class TunnelServer(object):
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
                                 print ' '+str(recv_packets)+' now in queue'
-                                if recv_packets != None:
-                                for send_pkt in recv_packets:
-                                    self._sock.sendto(send_pkt, (raddr,rport))
-                                utils.clear_messages(addr)
-                            recv_packet = ''
-                            recv_packets = ''
                 else:
                     # iptables forward
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_packet)+ 'if it could'
@@ -105,9 +99,7 @@ class TunnelServer(object):
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
                 if recv_packet and recv_packets:
-                    packet = recv_packet[0]
-                    print 'writing to tunnel' + str(packet)
-                    self._tun.write(packet)
+                    self._tun.write(recv_packet)
                 recv_packet = ''
 
             if self._sock in w:
