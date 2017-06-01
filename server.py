@@ -43,6 +43,7 @@ class TunnelServer(object):
         send_info = ''
         recv_packet = ''
         send_packet = ''
+        recv_packets = ''
         
         while True:
             r, w, x = select.select(r, w, x)
@@ -105,14 +106,14 @@ class TunnelServer(object):
                     print 'writing to socket. This is meant for'+str(raddr)
                     
                     dirty_packets = send_info[1]
+                    if dirty_packets:
+                        for dirty_packet in dirty_packets:
+                            self._sock.sendto(dirty_packet, (raddr,rport))
 
-                    for dirty_packet in dirty_packets:
-                        self._sock.sendto(dirty_packet, (raddr,rport))
-
-                    utils.clear_messages(send_info[0])
-                    send_info = ''
-                    recv_packets = ''
-                    send_packet = ''
+                            utils.clear_messages(send_info[0])
+                            send_info = ''
+                            recv_packets = ''
+                            send_packet = ''
 
             r = []; w = []
 
