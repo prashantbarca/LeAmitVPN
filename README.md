@@ -1,5 +1,7 @@
 # LeAmitVPN
-Simple VPN client and server implementations in python.
+Simple VPN client and server implementations in python by Prashant Anantharaman, Kirtivardhan Rathore and Aditi Phatak.
+
+
 
 ## Dependencies
 
