@@ -71,7 +71,11 @@ class TunnelServer(object):
                             # get message queue and send one by one
                             recv_packets = utils.get_messages_for_client(clientIP.src)
                             if recv_packets != None:
-                                print ' '+str(recv_packets)+' now in queue'
+                                for send_pkt in recv_packets:
+                                    self._sock.sendto(send_pkt, (raddr,rport))
+                                utils.clear_messages(addr)
+                            recv_packet = ''
+                            recv_packets = ''
                     else:
                         utils.receive_non_auth_message(recv_packet)
                         if clientIP:
