@@ -109,11 +109,10 @@ class TunnelServer(object):
                     if dirty_packets:
                         for dirty_packet in dirty_packets:
                             self._sock.sendto(dirty_packet, (raddr,rport))
-
-                            utils.clear_messages(send_info[0])
-                            send_info = ''
-                            recv_packets = ''
-                            send_packet = ''
+                        utils.clear_messages(send_info[0])
+                        send_info = ''
+                        recv_packets = ''
+                        send_packet = ''
 
             r = []; w = []
 
