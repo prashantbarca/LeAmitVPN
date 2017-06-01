@@ -69,7 +69,6 @@ class TunnelServer(object):
                         if clientIP:
                             # get message queue and send one by one
                             recv_packets = utils.get_messages_for_client(clientIP.src)
-                            recv_packet = ''
                             if recv_packets != None:
                                 print ' '+str(recv_packets)+' now in queue'
                     else:
