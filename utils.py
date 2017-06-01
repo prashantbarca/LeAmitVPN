@@ -60,14 +60,16 @@ def send_auth_packet(sock, username, pw):
     print "Client -> Server : Sending poll packet"
     message = "username:"+username+":"+pw+":" + str(time.time())
     
-    sock.sendto(message, (SERVER_UDP_IP, 5050))
+    enc(sock, message, (SERVER_UDP_IP, 5050))
+    #sock.sendto(message, (SERVER_UDP_IP, 5050))
     return
 
 # Server receives message and decides if its an auth message
 def recv_auth(sock, addr, encmessage):
     #xor = XOR.XORCipher(key)
     #message = xor.decrypt(encmessage)
-    message = encmessage
+    #message = encmessage
+    message = dec(sock, encmessage, addr)
     #print "Recv auth method entered"
     try:
         username = message.split(':')[1]
