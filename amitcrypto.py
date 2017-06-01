@@ -6,6 +6,7 @@ xor1 = XOR.XORCipher(key) # To decrypt
 
 def enc(sock, message, addr):
     abcd = xor.encrypt(message)
+    print message == dec(sock, abcd, addr)
     sock.sendto(abcd, addr)
     return abcd
 
