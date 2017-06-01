@@ -85,7 +85,11 @@ class TunnelServer(object):
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
-                                print ' '+str(recv_packets)+' now in queue'
+                                for send_pkt in recv_packets:
+                                    self._sock.sendto(send_pkt, (raddr,rport))
+                                utils.clear_messages(addr)
+                            recv_packet = ''
+                            recv_packets = ''
                 else:
                     # iptables forward
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_packet)+ 'if it could'
