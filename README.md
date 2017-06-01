@@ -2,7 +2,6 @@
 Simple VPN client and server implementations in python by Prashant Anantharaman, Kirtivardhan Rathore and Aditi Phatak.
 
 
-
 ## Dependencies
 
 ```shell
@@ -13,11 +12,11 @@ sudo pip install python-pytun pycrypto
 ## Architecture
 
 
-						    +---------------------------------+
-						    |                                 |
-						    |   10.10.0.1   VPN Server        |
-						    |   Server                        |
-						    |                                 |
+						        +---------------------------------+
+						        |                                 |
+						        |   10.10.0.1   VPN Server        |
+						        |   Server                        |
+						        |                                 |
 					    +-------+---------------------------------+--------+
 					    |                                                  |
 					    |                                                  |
@@ -26,16 +25,21 @@ sudo pip install python-pytun pycrypto
 					    |                                                  |
 					    |                                                  |
 					    |                                                  |
-		+---------------------------v----+                                      +------v-------------------------+
-		|                                |                                      |                                |
-		|   10.10.0.2  Web Server        |                                      |   10.10.0.3   Openssh Server   |
-		|   Kiwi                         |                                      |   Pa                           |
-		|                                |                                      |                                |
-		|                                |                                      |                                |
-		+--------------------------------+                                      +--------------------------------+
+		+---------------v----------------+                                +v-------------------------------+
+		|                                |                                |                                |
+		|   10.10.0.2  Web Server        |                                |   10.10.0.3   Openssh Server   |
+		|   Kiwi                         |                                |   Pa                           |
+		|                                |                                |                                |
+		|                                |                                |                                |
+		+--------------------------------+                                +--------------------------------+
 
 
 
+
+
+### Tunneling
+
+### Polling
 
 
                    +                                           +
@@ -57,9 +61,8 @@ sudo pip install python-pytun pycrypto
                    +                                           +
 
 
-### Tunneling
+We poll the server to ask if it has any new messages for us. We have the polling method running on a separate thread.
 
-### Polling
 
 ### Authentication
 
