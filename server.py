@@ -93,9 +93,10 @@ class TunnelServer(object):
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
-                if recv_packet:
-                    print 'writing to tunnel' + str(recv_packet)
-                    self._tun.write(recv_packet)
+                if recv_packet and recv_packets:
+                    packet = recv_packet[0]
+                    print 'writing to tunnel' + str(packet)
+                    self._tun.write(packet)
                     recv_packet = ''
 
             if self._sock in w:
