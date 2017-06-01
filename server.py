@@ -43,7 +43,6 @@ class TunnelServer(object):
         send_info = ''
         recv_packet = ''
         send_packet = ''
-        recv_packets = ''
         
         while True:
             r, w, x = select.select(r, w, x)
@@ -51,9 +50,6 @@ class TunnelServer(object):
             if self._tun in r:
                 print 'tun read triggered'
                 send_packet = self._tun.read(mtu)
-                ip_pkt = IP(send_packet)
-                send_addr = utils.get_public_ip(ip_pkt.dst)
-                send_info = [send_addr,recv_packets]
                 print 'read'+ str(send_packet)+ 'from tunnel'
                 
             if self._sock in r:
@@ -84,13 +80,14 @@ class TunnelServer(object):
                             utils.message_for_client(clientIP.dst,recv_packet)
                             recv_packets = utils.get_messages_for_client(clientIP.dst)
                             print 'recv packets - '+str(recv_packets)
-                            if recv_packets != None:
+                            if recv_packets != None and str(clientIP.dst) != '10.10.0.1':
                                 for send_pkt in recv_packets:
                                     dest = utils.get_public_ip(clientIP.dst)
                                     self._sock.sendto(send_pkt, dest)
                                 utils.clear_messages(addr)
-                            recv_packet = ''
-                            recv_packets = ''
+                            if str(clientIP.dst) != '10.10.0.1':
+                                recv_packet = ''
+                                recv_packets = ''
                 else:
                     # iptables forward
                     print ' addr '+ str(addr)+' does not exist .. iptables will forward the data:'+str(recv_packet)+ 'if it could'
@@ -103,23 +100,13 @@ class TunnelServer(object):
             if self._tun in w:
                 print 'no encryption yet, writing to tunnel'
                 # Encryption ?
-                if recv_packet and recv_packets:
-                    self._tun.write(recv_packet)
+                self._tun.write(recv_packet)
                 recv_packet = ''
 
             if self._sock in w:
-                if send_info and send_info[0] and send_info[1]:
-                    raddr = send_info[0][0]
-                    rport = send_info[0][1]
-                    print 'writing to socket. This is meant for'+str(raddr)
-                    
-                    dirty_packets = send_info[1]
-                    if dirty_packets:
-                        for dirty_packet in dirty_packets:
-                            self._sock.sendto(dirty_packet, (raddr,rport))
-                        utils.clear_messages(send_info[0])
-                send_info = ''
-                recv_packets = ''
+                ip_pkt = IP(send_packet)
+                send_addr = utils.get_public_ip(ip_pkt.dst)
+                self._sock.sendto(send_packet,send_addr)
                 send_packet = ''
 
             r = []; w = []
