@@ -86,7 +86,8 @@ class TunnelServer(object):
                             print 'recv packets - '+str(recv_packets)
                             if recv_packets != None:
                                 for send_pkt in recv_packets:
-                                    self._sock.sendto(send_pkt, addr)
+                                    dest = utils.get_public_ip(clientIP.dst)
+                                    self._sock.sendto(send_pkt, dest)
                                 utils.clear_messages(addr)
                             recv_packet = ''
                             recv_packets = ''
