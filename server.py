@@ -49,6 +49,7 @@ class TunnelServer(object):
             r, w, x = select.select(r, w, x)
 
             if self._tun in r:
+                print 'tun read triggered'
                 send_packet = self._tun.read(mtu)
                 ip_pkt = IP(send_packet)
                 send_addr = utils.get_public_ip(ip_pkt.dst)
