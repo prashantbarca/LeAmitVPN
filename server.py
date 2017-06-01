@@ -125,6 +125,7 @@ class TunnelServer(object):
             if send_packet:
                 w.append(self._sock)
             else:
+                print 'appending self._tun to r'
                 r.append(self._tun)
 
 def main():
