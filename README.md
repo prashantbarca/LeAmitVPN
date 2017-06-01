@@ -1,10 +1,63 @@
 # LeAmitVPN
-Simple VPN client and server implementations in python
+Simple VPN client and server implementations in python.
+
+## Dependencies
+
+```shell
+sudo apt-get install python-dev python-scapy
+sudo pip install python-pytun pycrypto
+```
+
+## Architecture
+
+						    +---------------------------------+
+						    |                                 |
+						    |   10.10.0.1   VPN Server        |
+						    |   Server                        |
+						    |                                 |
+					    +-------+---------------------------------+--------+
+					    |                                                  |
+					    |                                                  |
+					    |                                                  |
+					    |                                                  |
+					    |                                                  |
+					    |                                                  |
+					    |                                                  |
+		+---------------------------v----+                                      +------v-------------------------+
+		|                                |                                      |                                |
+		|   10.10.0.2  Web Server        |                                      |   10.10.0.3   Openssh Server   |
+		|   Kiwi                         |                                      |   Pa                           |
+		|                                |                                      |                                |
+		|                                |                                      |                                |
+		+--------------------------------+                                      +--------------------------------+
+
+
+
+
+
+                   +                                           +
+                   |  Encrypt(Poll(username, password,         |
+                   |  timestamp)                               |
+                   |                                           |
+                   +------------------------------------------>+
+                   |                                           |
+                   |                                           |
+                   |                                           |
+                   |                                           |
+                   |                                           |
+                   | <-----------------------------------------+
+                   |                                           |
+                   |           Encrypt(Messages)               |
+                   |                                           |
+                   |                                           |
+                   |                                           |
+                   +                                           +
+
 
 ## Client
 
 ```shell
-sudo python client.py --tun-adr 10.10.0.2 --tun-dstaddr 10.10.0.1
+sudo python client.py --tun-adr 10.10.0.2 --tun-dstaddr 10.10.0.1 --pw password
 ```
 
 ## Server
@@ -12,6 +65,8 @@ sudo python client.py --tun-adr 10.10.0.2 --tun-dstaddr 10.10.0.1
 ```shell
 sudo python server.py
 ```
+
+Our server is present at (prashant.at)[prashant.at].
 
 
 ## License
