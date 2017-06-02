@@ -41,7 +41,7 @@ class TunnelClient(object):
     def every_five_seconds(self):
         while True:
             utils.send_auth_packet(self._sock, self._tun.addr, self._rpw)
-            time.sleep(5)
+            time.sleep(1)
     
     def run(self):
         thread = Thread(target = self.every_five_seconds)
