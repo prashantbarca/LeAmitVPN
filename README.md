@@ -39,6 +39,54 @@ sudo pip install python-pytun pycrypto
 
 ### Tunneling
 
+The clients and the servers have the following artifacts:
+1. Clients - leamit0 (tun) interface
+2. Clients - UDP socket at a fixed port
+3. Servers - leamit0 (tun) interface
+4. Servers - UDP socket at a fixed port.
+
+******************************************
++      	    IP   	       	   	 +      	       
+|	src : Public IP of server	 |
+|	dest : Public IP of host	 |
++--------------------------------------->+
+|	UDP Payload			 |
+|  	The actual packet		 |
+|					 |
++--------------------------------------->+
+
+
+The flow is something like this:
+
+Client sends a poll to the server. Server sends all the packets meant for the client.
+Client reads the packets one at a time from the socket it originally sent the poll from.
+It writes the payload to its tunnel. It later reads the packet from the same tunnel.
+Client ultimately writes the packet to the kernel.
+Kernel reads the raw packet and is fooled into thinking it got a reply !
+
+The server operates by receiving a packet, unwrapping it, figuring out who wants to talk to him and forwarding it.
+For the server to behave like a client, it must have the same tunnel architecture as the client has
+to handle that side of the functionality.
+
+             +--------------------+                          icmp echo reply                                +-------------------+
+             |                    +-----------------------------------------------------------------------> |                   |
+             |      server socket |                                                                         | client socket     |
+             |                    |        <----------------------------------------------------------------+                   |
+       +-----+--------------------+------+                        icmp echo request                  +-----------------------+--+------+
+       |                                 |                                                           |                       ^         |
+       |                                 |                                                           |                       |         |
+       |                                 |                                                           |                       |         | first write to tun
+write echo request to other client through kernel                                            socket then writes     read from tun      |
+       |                                 |                                                   to kernel                       |         |
+       |                                 |                                                   which believes it got a reply   |         |
+       |                                 |                                                           |                       |         |
++------v------------+        +-----------v-----+                                             +-------v---------+          +--+---------v-----+
+|                   |        |                 |                                             |                 |          |                  |
+|  server kernel    |        |     tun0        |                                             |  client kernel  |          |    tun0          |
+|                   |        |                 |                                             |                 |          |                  |
++-------------------+        +-----------------+                                             +-----------------+          +------------------+
+
+
 ### Polling
 
 
